@@ -7,42 +7,37 @@ package ejb.session.stateless;
 
 import entity.AppointmentEntity;
 import entity.ConsultationEntity;
-import javax.ejb.Local;
-import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
 
 /**
  *
- * @author Max
+ * @author Lenovo
  */
 @Stateless
-@Local(AppointmentEntitySessionBeanLocal.class)
-@Remote(AppointmentEntitySessionBeanRemote.class)
-public class AppointmentEntitySessionBean implements AppointmentEntitySessionBeanRemote, AppointmentEntitySessionBeanLocal {
-
-    @PersistenceContext(unitName = "cars-ejbPU")
-    private EntityManager em;
+@Local(ConsultationEntitySessionBeanRemote.class)
+@Remote(ConsultationEntitySessionBeanLocal.class)
+public class ConsultationEntitySessionBean implements ConsultationEntitySessionBeanRemote, ConsultationEntitySessionBeanLocal {
     
     
-    //CRUD
-    
-    public Long createAppointmentEntity(AppointmentEntity appointmentEntity){
-        em.persist(appointmentEntity);
+   @PersistenceContext(unitName = "cars-ejbPU")
+   private EntityManager em;
+   
+   public Long createConsultationEntity(Consultation consultationEntity){
+        em.persist(consultationEntity);
         em.flush();
-        return appointmentEntity.getAppointmentId();
+        return consultationEntity.getAppointmentId();
     }
     
-    public AppointmentEntity retrieveAppointmentEntityById(Long appointmentId){
-        AppointmentEntity appointment = em.find(AppointmentEntity.class, appointmentId);
-        return appointment;
+    public ConsultationEntity retrieveConsultationEntityById(Long consultationId){
+        ConsultationEntity consultation = em.find(ConsultationEntity.class, consultationId);
+        return consultation;
     }
     
-    public void updateAppointmentEntity(AppointmentEntity newAppointment){
+    public void updateConsultationEntity(ConsultationEntity consultation){
         //merge unmanaged state from client side to database
         
-        em.merge(newAppointment);
+        em.merge(consultation);
     }
     
     //delete by id, passing in an entity from the client will be unmanaged
@@ -61,10 +56,5 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
         return consultationEntity.getId();
         
     }
-    
-    
 
-    
-
-    
 }

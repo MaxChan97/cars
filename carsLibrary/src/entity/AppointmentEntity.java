@@ -29,12 +29,12 @@ public class AppointmentEntity implements Serializable {
     private Date appointmentDate;
     private Time appointmentTime;
     
-    /*@ManyToOne
+    @ManyToOne
     private PatientEntity patient;
     @ManyToOne
     private DoctorEntity doctor;
     @OneToOne
-    private ConsultationEntity consultation;*/
+    private ConsultationEntity consultation;
     
 
     public AppointmentEntity() {
@@ -107,5 +107,9 @@ public class AppointmentEntity implements Serializable {
     public void setAppointmentTime(Time appointmentTime) {
         this.appointmentTime = appointmentTime;
     }
+    
+    //lifecycle methods
+    
+    
     
 }

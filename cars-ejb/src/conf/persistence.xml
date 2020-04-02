@@ -3,6 +3,10 @@
   <persistence-unit name="cars-ejbPU" transaction-type="JTA">
     <jta-data-source>jdbc/carsdb</jta-data-source>
     <class>entity.AppointmentEntity</class>
+    <class>entity.ConsultationEntity</class>
+    <class>entity.DoctorEntity</class>
+    <class>entity.PatientEntity</class>
+    <class>entity.StaffEntity</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>

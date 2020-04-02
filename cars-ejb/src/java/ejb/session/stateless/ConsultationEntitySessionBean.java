@@ -7,7 +7,11 @@ package ejb.session.stateless;
 
 import entity.AppointmentEntity;
 import entity.ConsultationEntity;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 
 /**
@@ -23,10 +27,10 @@ public class ConsultationEntitySessionBean implements ConsultationEntitySessionB
    @PersistenceContext(unitName = "cars-ejbPU")
    private EntityManager em;
    
-   public Long createConsultationEntity(Consultation consultationEntity){
+   public Long createConsultationEntity(ConsultationEntity consultationEntity){
         em.persist(consultationEntity);
         em.flush();
-        return consultationEntity.getAppointmentId();
+        return consultationEntity.getId();
     }
     
     public ConsultationEntity retrieveConsultationEntityById(Long consultationId){
@@ -41,20 +45,22 @@ public class ConsultationEntitySessionBean implements ConsultationEntitySessionB
     }
     
     //delete by id, passing in an entity from the client will be unmanaged
-    public void deleteAppointmentEntity(Long id){
-        AppointmentEntity appointment = retrieveAppointmentEntityById(id);
+    public void deleteConsultation(Long id){
+        ConsultationEntity appointment = retrieveConsultationEntityById(id);
         em.remove(appointment);
     }
     
     
-    // One to One relationship, mandatory hence we need to have one 
-    public Long createConsultationEntity(ConsultationEntity consultationEntity, Long recordId){
-        em.persist(consultationEntity);
-        AppointmentEntity appointment = em.find(AppointmentEntity.class,recordId);
+    /*One to One relationship, mandatory hence we need to have one 
+    public Long createAppointmentEntity(AppointmentEntity appointment, Long recordId){
+        em.persist(appointment);
+        ConsultationEntity consultation = em.find(ConsultationEntity.class, recordId);
+        
         consultationEntity.setAppointmentEntity(appointment);
         em.flush();
         return consultationEntity.getId();
         
     }
+*/
 
 }

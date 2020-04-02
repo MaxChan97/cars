@@ -26,6 +26,8 @@ public class PatientEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String identityNum;
+    
+    @Column(length = 6, nullable=false)
     private String password;
     @Column(length = 255)
     private String firstName;

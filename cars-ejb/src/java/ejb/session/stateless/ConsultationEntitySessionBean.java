@@ -5,9 +5,13 @@
  */
 package ejb.session.stateless;
 
-import entity.AppointmentEntity;
+
 import entity.ConsultationEntity;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 
 /**
@@ -17,16 +21,19 @@ import javax.ejb.Stateless;
 @Stateless
 @Local(ConsultationEntitySessionBeanRemote.class)
 @Remote(ConsultationEntitySessionBeanLocal.class)
+
 public class ConsultationEntitySessionBean implements ConsultationEntitySessionBeanRemote, ConsultationEntitySessionBeanLocal {
     
     
    @PersistenceContext(unitName = "cars-ejbPU")
    private EntityManager em;
    
-   public Long createConsultationEntity(Consultation consultationEntity){
+   public Long createConsultationEntity(ConsultationEntity consultationEntity){
         em.persist(consultationEntity);
         em.flush();
-        return consultationEntity.getAppointmentId();
+
+        return consultationEntity.getConsultationId();
+
     }
     
     public ConsultationEntity retrieveConsultationEntityById(Long consultationId){
@@ -36,25 +43,22 @@ public class ConsultationEntitySessionBean implements ConsultationEntitySessionB
     
     public void updateConsultationEntity(ConsultationEntity consultation){
         //merge unmanaged state from client side to database
-        
         em.merge(consultation);
     }
     
     //delete by id, passing in an entity from the client will be unmanaged
-    public void deleteAppointmentEntity(Long id){
-        AppointmentEntity appointment = retrieveAppointmentEntityById(id);
+
+    public void deleteConsultation(Long id){
+        ConsultationEntity appointment = retrieveConsultationEntityById(id);
         em.remove(appointment);
     }
     
-    
-    // One to One relationship, mandatory hence we need to have one 
-    public Long createConsultationEntity(ConsultationEntity consultationEntity, Long recordId){
-        em.persist(consultationEntity);
-        AppointmentEntity appointment = em.find(AppointmentEntity.class,recordId);
-        consultationEntity.setAppointmentEntity(appointment);
-        em.flush();
-        return consultationEntity.getId();
-        
+
+
+
+    public void deleteConsultationEntity(Long consultationId){
+        ConsultationEntity consultationEntity = retrieveConsultationEntityById(consultationId);
+        em.remove(consultationEntity);
     }
 
 }

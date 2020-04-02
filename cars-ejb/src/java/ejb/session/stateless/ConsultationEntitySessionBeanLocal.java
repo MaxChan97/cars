@@ -5,6 +5,8 @@
  */
 package ejb.session.stateless;
 
+import entity.ConsultationEntity;
+
 
 
 /**
@@ -13,5 +15,9 @@ package ejb.session.stateless;
  */
 
 public interface ConsultationEntitySessionBeanLocal {
+     public Long createConsultationEntity(ConsultationEntity consultationEntity);
+     public ConsultationEntity retrieveConsultationEntityById(Long consultationId);
+     public void updateConsultationEntity(ConsultationEntity consultation);
+     public void deleteConsultation(Long id);
     
 }

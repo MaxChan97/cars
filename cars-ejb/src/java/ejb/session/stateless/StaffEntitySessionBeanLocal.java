@@ -5,13 +5,15 @@
  */
 package ejb.session.stateless;
 
-import javax.ejb.Local;
+import entity.StaffEntity;
 
-/**
- *
- * @author Lenovo
- */
-@Local
+
+
 public interface StaffEntitySessionBeanLocal {
+     public Long createStaffEntity(StaffEntity staffEntity);
+     public StaffEntity retrieveStaffEntityById(Long id);
+     public void updateStaffEntity(StaffEntity staffEntity);
+     public void deleteStaffEntity(Long id);
+      
     
 }

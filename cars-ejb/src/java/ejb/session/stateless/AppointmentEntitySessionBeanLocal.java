@@ -5,11 +5,17 @@
  */
 package ejb.session.stateless;
 
+import entity.AppointmentEntity;
+
 
 /**
  *
  * @author Max
  */
 public interface AppointmentEntitySessionBeanLocal {
+     public Long createAppointmentEntity(AppointmentEntity appointmentEntity);
+     public AppointmentEntity retrieveAppointmentEntityById(Long appointmentId);
+     public void updateAppointmentEntity(AppointmentEntity newAppointment);
+     public void deleteAppointmentEntity(Long id);
     
 }

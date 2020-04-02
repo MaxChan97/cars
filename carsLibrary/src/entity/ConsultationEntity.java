@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 /**
@@ -26,31 +27,41 @@ public class ConsultationEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private Integer consultationId;
+    private Long consultationId;
     private Integer queueNumber;
     private Date consultationDate;
     private Time consulatationTime;
     private Integer duration;
-    private String patientId;
     
-    @OneToOne(mappedBy = "appointmentEntity",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private AppointmentEntity appointmentEntity;
-    
+    @ManyToOne
+    private PatientEntity patient;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private AppointmentEntity appointment;
 
-    public Long getId() {
-        return id;
+    public ConsultationEntity() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public ConsultationEntity(Integer queueNumber, Date consultationDate, Time consulatationTime, Integer duration) {
+        this();
+        
+        this.queueNumber = queueNumber;
+        this.consultationDate = consultationDate;
+        this.consulatationTime = consulatationTime;
+        this.duration = duration;
+    }
+
+    public Long getConsultationId() {
+        return consultationId;
+    }
+
+    public void setConsultationId(Long consultationId) {
+        this.consultationId = consultationId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (consultationId != null ? consultationId.hashCode() : 0);
         return hash;
     }
 
@@ -61,18 +72,10 @@ public class ConsultationEntity implements Serializable {
             return false;
         }
         ConsultationEntity other = (ConsultationEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.consultationId == null && other.consultationId != null) || (this.consultationId != null && !this.consultationId.equals(other.consultationId))) {
             return false;
         }
         return true;
-    }
-
-    public Integer getConsultationId() {
-        return consultationId;
-    }
-
-    public void setConsultationId(Integer consultationId) {
-        this.consultationId = consultationId;
     }
 
     public Integer getQueueNumber() {
@@ -107,26 +110,32 @@ public class ConsultationEntity implements Serializable {
         this.duration = duration;
     }
 
-    public String getPatientId() {
-        return patientId;
+    public AppointmentEntity getAppointment() {
+        return appointment;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
-
-    public AppointmentEntity getAppointmentEntity() {
-        return appointmentEntity;
-    }
-
-    public void setAppointmentEntity(AppointmentEntity appointmentEntity) {
-        this.appointmentEntity = appointmentEntity;
+    public void setAppointment(AppointmentEntity appointment) {
+        this.appointment = appointment;
     }
     
 
     @Override
     public String toString() {
-        return "entity.ConsultationEntity[ id=" + id + " ]";
+        return "entity.ConsultationEntity[ id=" + consultationId + " ]";
+    }
+
+    /**
+     * @return the patient
+     */
+    public PatientEntity getPatient() {
+        return patient;
+    }
+
+    /**
+     * @param patient the patient to set
+     */
+    public void setPatient(PatientEntity patient) {
+        this.patient = patient;
     }
     
 }

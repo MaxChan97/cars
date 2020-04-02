@@ -23,8 +23,6 @@ public class PatientEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String identityNum;
     private String password;
     @Column(length = 255)
@@ -41,25 +39,33 @@ public class PatientEntity implements Serializable {
     @Column(nullable = false)
     private String address;
     
-    @OneToMany(mappedBy = "AppointmentEntity")
+    @OneToMany(mappedBy = "patient")
     private List<AppointmentEntity> appointments;
-    
-    @OneToMany(mappedBy = "ConsultationEntity")
+    @OneToMany(mappedBy = "patient")
     private List<ConsultationEntity> consultations;
+
+    public PatientEntity() {
+    }
+
+    public PatientEntity(String identityNum, String password, String firstName, String lastName, String gender, Integer age, String phoneNumber, String address) {
+        this();
+        
+        this.identityNum = identityNum;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.gender = gender;
+        this.age = age;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+    }
     
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (identityNum != null ? identityNum.hashCode() : 0);
         return hash;
     }
 
@@ -70,7 +76,7 @@ public class PatientEntity implements Serializable {
             return false;
         }
         PatientEntity other = (PatientEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.identityNum == null && other.identityNum != null) || (this.identityNum != null && !this.identityNum.equals(other.identityNum))) {
             return false;
         }
         return true;
@@ -158,7 +164,7 @@ public class PatientEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.PatientEntity[ id=" + id + " ]";
+        return "entity.PatientEntity[ id=" + identityNum + " ]";
     }
     
 }

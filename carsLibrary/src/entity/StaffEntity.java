@@ -22,54 +22,54 @@ public class StaffEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column (length = 30)
-    private Integer staffId;
+    private Long staffId;
     @Column(length = 255, nullable = false)
     private String firstName;
     @Column (length =255, nullable= false)
     private String lastName;
-    
+    @Column (nullable = false, unique = true)
+    private String userName;
+    @Column (nullable = false)
     private String password;
-    
-    
-    
 
-    public Long getId() {
-        return id;
+    public StaffEntity() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public StaffEntity(String firstName, String lastName, String userName, String password) {
+        this();
+        
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public Long getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(Long staffId) {
+        this.staffId = staffId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (staffId != null ? staffId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the staffId fields are not set
         if (!(object instanceof StaffEntity)) {
             return false;
         }
         StaffEntity other = (StaffEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.staffId == null && other.staffId != null) || (this.staffId != null && !this.staffId.equals(other.staffId))) {
             return false;
         }
         return true;
-    }
-
-    public Integer getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(Integer staffId) {
-        this.staffId = staffId;
     }
 
     public String getFirstName() {
@@ -98,7 +98,21 @@ public class StaffEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.StaffEntity[ id=" + id + " ]";
+        return "entity.StaffEntity[ id=" + staffId + " ]";
+    }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
     
 }

@@ -793,8 +793,6 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${file.reference.org-netbeans-modules-java-j2seproject-copylibstask.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.validation-api-2.0.1.Final.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${reference.carsLibrary.jar}" todir="${build.classes.dir}"/>
-        <copyfiles files="${file.reference.javaee-api-7.0.jar-1}" todir="${build.classes.dir}"/>
-        <copyfiles files="${libs.javaee-api-7.0.classpath}" todir="${build.classes.dir}"/>
     </target>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
         <basename file="${file.reference.javaee-api-7.0.jar}" property="manifest.file.reference.javaee-api-7.0.jar"/>
@@ -804,10 +802,8 @@ exists or setup the property manually. For example like this:
         <basename file="${file.reference.org-netbeans-modules-java-j2seproject-copylibstask.jar}" property="manifest.file.reference.org-netbeans-modules-java-j2seproject-copylibstask.jar"/>
         <basename file="${file.reference.validation-api-2.0.1.Final.jar}" property="manifest.file.reference.validation-api-2.0.1.Final.jar"/>
         <basename file="${reference.carsLibrary.jar}" property="manifest.reference.carsLibrary.jar"/>
-        <basename file="${file.reference.javaee-api-7.0.jar-1}" property="manifest.file.reference.javaee-api-7.0.jar-1"/>
-        <basename file="${libs.javaee-api-7.0.classpath}" property="manifest.libs.javaee-api-7.0.classpath"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 jar-4 jar-5 jar-6 jar-7 jar-8 jar-9 "/>
+            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 jar-4 jar-5 jar-6 jar-7 "/>
             <attribute name="jar-1-Extension-Name" value="${manifest.file.reference.javaee-api-7.0.jar}"/>
             <attribute name="jar-2-Extension-Name" value="${manifest.file.reference.javaee-endorsed-api-7.0.jar}"/>
             <attribute name="jar-3-Extension-Name" value="${manifest.file.reference.javax.persistence-2.1.0.jar}"/>
@@ -815,8 +811,6 @@ exists or setup the property manually. For example like this:
             <attribute name="jar-5-Extension-Name" value="${manifest.file.reference.org-netbeans-modules-java-j2seproject-copylibstask.jar}"/>
             <attribute name="jar-6-Extension-Name" value="${manifest.file.reference.validation-api-2.0.1.Final.jar}"/>
             <attribute name="jar-7-Extension-Name" value="${manifest.reference.carsLibrary.jar}"/>
-            <attribute name="jar-8-Extension-Name" value="${manifest.file.reference.javaee-api-7.0.jar-1}"/>
-            <attribute name="jar-9-Extension-Name" value="${manifest.libs.javaee-api-7.0.classpath}"/>
         </manifest>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
@@ -827,8 +821,6 @@ exists or setup the property manually. For example like this:
         <copyfiles files="${file.reference.org-netbeans-modules-java-j2seproject-copylibstask.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.validation-api-2.0.1.Final.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${reference.carsLibrary.jar}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${file.reference.javaee-api-7.0.jar-1}" todir="${dist.ear.dir}/lib"/>
-        <copyfiles files="${libs.javaee-api-7.0.classpath}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">

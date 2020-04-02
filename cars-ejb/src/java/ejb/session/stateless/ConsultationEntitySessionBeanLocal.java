@@ -5,13 +5,13 @@
  */
 package ejb.session.stateless;
 
-import javax.ejb.Local;
+
 
 /**
  *
  * @author Lenovo
  */
-@Local
+
 public interface ConsultationEntitySessionBeanLocal {
     
 }

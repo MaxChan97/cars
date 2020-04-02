@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,11 +24,11 @@ public class StaffEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    
+    @Column (length = 30)
     private Integer staffId;
-    
+    @Column(length = 255, nullable = false)
     private String firstName;
-    
+    @Column (length =255, nullable= false)
     private String lastName;
     
     private String password;

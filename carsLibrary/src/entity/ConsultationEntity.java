@@ -8,7 +8,9 @@ package entity;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +35,7 @@ public class ConsultationEntity implements Serializable {
     private Integer duration;
     private String patientId;
     
-    @OneToOne(mappedBy = "appointmentEntity")
+    @OneToOne(mappedBy = "appointmentEntity",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private AppointmentEntity appointmentEntity;
     
 
@@ -112,6 +114,15 @@ public class ConsultationEntity implements Serializable {
     public void setPatientId(String patientId) {
         this.patientId = patientId;
     }
+
+    public AppointmentEntity getAppointmentEntity() {
+        return appointmentEntity;
+    }
+
+    public void setAppointmentEntity(AppointmentEntity appointmentEntity) {
+        this.appointmentEntity = appointmentEntity;
+    }
+    
 
     @Override
     public String toString() {

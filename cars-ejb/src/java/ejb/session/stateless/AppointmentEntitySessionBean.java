@@ -5,6 +5,8 @@
  */
 package ejb.session.stateless;
 
+import entity.AppointmentEntity;
+import entity.ConsultationEntity;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -22,6 +24,45 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
 
     @PersistenceContext(unitName = "cars-ejbPU")
     private EntityManager em;
+    
+    
+    //CRUD
+    
+    public Long createAppointmentEntity(AppointmentEntity appointmentEntity){
+        em.persist(appointmentEntity);
+        em.flush();
+        return appointmentEntity.getAppointmentId();
+    }
+    
+    public AppointmentEntity retrieveAppointmentEntityById(Long appointmentId){
+        AppointmentEntity appointment = em.find(AppointmentEntity.class, appointmentId);
+        return appointment;
+    }
+    
+    public void updateAppointmentEntity(AppointmentEntity newAppointment){
+        //merge unmanaged state from client side to database
+        
+        em.merge(newAppointment);
+    }
+    
+    //delete by id, passing in an entity from the client will be unmanaged
+    public void deleteAppointmentEntity(Long id){
+        AppointmentEntity appointment = retrieveAppointmentEntityById(id);
+        em.remove(appointment);
+    }
+    
+    
+    // One to One relationship, mandatory hence we need to have one 
+    public Long createConsultationEntity(ConsultationEntity consultationEntity, Long recordId){
+        em.persist(consultationEntity);
+        AppointmentEntity appointment = em.find(AppointmentEntity.class,recordId);
+        consultationEntity.setAppointmentEntity(appointment);
+        em.flush();
+        return consultationEntity.getId();
+        
+    }
+    
+    
 
     
 

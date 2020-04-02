@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package util.enumeration;
+package ejb.session.stateless;
 
+import javax.ejb.Remote;
 
-public enum GenderEnum {
-    Male,
-    Female 
-
-    
+/**
+ *
+ * @author Lenovo
+ */
+@Remote
+public interface PatientEntitySessionBeanRemote {
     
 }

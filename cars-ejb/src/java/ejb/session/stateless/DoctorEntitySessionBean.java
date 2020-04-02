@@ -25,22 +25,26 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
   private EntityManager em;
   
   
+  @Override
   public long createDoctorEntity(DoctorEntity doctorEntity)
   {
       em.persist(doctorEntity);
       em.flush();
-      return doctorEntity.getId();
+      return doctorEntity.getDoctorId();
   }
   
+  @Override
   public DoctorEntity retrieveDoctorEntityById(Long id){
       DoctorEntity entity = em.find(DoctorEntity.class, id);
       return entity;
   }
   
+  @Override
   public void updateDoctorEntity(DoctorEntity doctor){
       em.merge(doctor);
   }
   
+  @Override
   public void deleteDoctorEntity(Long id)
   {
       DoctorEntity toDelete = retrieveDoctorEntityById(id);

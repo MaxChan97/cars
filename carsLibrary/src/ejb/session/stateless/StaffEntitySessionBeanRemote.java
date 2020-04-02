@@ -5,13 +5,14 @@
  */
 package ejb.session.stateless;
 
-import javax.ejb.Remote;
+import entity.StaffEntity;
 
-/**
- *
- * @author Lenovo
- */
-@Remote
+
+
 public interface StaffEntitySessionBeanRemote {
+     public Long createStaffEntity(StaffEntity staffEntity);
+     public StaffEntity retrieveStaffEntityById(Long id);
+     public void updateStaffEntity(StaffEntity staffEntity);
+     public void deleteStaffEntity(Long id);
     
 }

@@ -33,7 +33,7 @@ public class AppointmentEntity implements Serializable {
     private PatientEntity patient;
     @ManyToOne
     private DoctorEntity doctor;
-    @OneToOne
+    @OneToOne(mappedBy="appointment")
     private ConsultationEntity consultation;
     
 
@@ -109,6 +109,48 @@ public class AppointmentEntity implements Serializable {
     }
     
     //lifecycle methods
+
+    /**
+     * @return the patient
+     */
+    public PatientEntity getPatient() {
+        return patient;
+    }
+
+    /**
+     * @param patient the patient to set
+     */
+    public void setPatient(PatientEntity patient) {
+        this.patient = patient;
+    }
+
+    /**
+     * @return the doctor
+     */
+    public DoctorEntity getDoctor() {
+        return doctor;
+    }
+
+    /**
+     * @param doctor the doctor to set
+     */
+    public void setDoctor(DoctorEntity doctor) {
+        this.doctor = doctor;
+    }
+
+    /**
+     * @return the consultation
+     */
+    public ConsultationEntity getConsultation() {
+        return consultation;
+    }
+
+    /**
+     * @param consultation the consultation to set
+     */
+    public void setConsultation(ConsultationEntity consultation) {
+        this.consultation = consultation;
+    }
     
     
     

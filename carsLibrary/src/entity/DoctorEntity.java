@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import javax.persistence.Column;
@@ -27,63 +28,71 @@ public class DoctorEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Integer doctorId;
-    @Column(length =255)
+    private Long doctorId;
+    @Column(nullable = false)
     private String firstName;
+    @Column(nullable = false)
     private String lastName;
+    @Column(nullable = false)
     private String registration;
+    @Column(nullable = false)
     private String qualification;
-    
-    private HashSet<TimeStamp> notAvail;
-    
+    @Column(nullable = false)
+    private HashSet<Timestamp> notAvail;
+    @Column(nullable = false)
     private HashSet<Date> leaves;
     
-    @OneToMany(mappedBy = "appointmentEntity")
+    @OneToMany(mappedBy = "doctor")
     private List<AppointmentEntity> appointments;
     
     @Transient
     private String fullName;
+
+    public DoctorEntity() {
+    }
+
+    public DoctorEntity(String firstName, String lastName, String registration, String qualification) {
+        this();
+        
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.registration = registration;
+        this.qualification = qualification;
+    }
+    
+    
     
     public String getFullName(){
         this.fullName = this.firstName + " " + this.lastName;
         return this.fullName;
     }
 
-    public Long getId() {
-        return id;
+    public Long getDoctorId() {
+        return doctorId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDoctorId(Long doctorId) {
+        this.doctorId = doctorId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (doctorId != null ? doctorId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the doctorId fields are not set
         if (!(object instanceof DoctorEntity)) {
             return false;
         }
         DoctorEntity other = (DoctorEntity) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.doctorId == null && other.doctorId != null) || (this.doctorId != null && !this.doctorId.equals(other.doctorId))) {
             return false;
         }
         return true;
-    }
-
-    public Integer getDoctorId() {
-        return doctorId;
-    }
-
-    public void setDoctorId(Integer doctorId) {
-        this.doctorId = doctorId;
     }
 
     public String getFirstName() {
@@ -118,11 +127,11 @@ public class DoctorEntity implements Serializable {
         this.qualification = qualification;
     }
 
-    public HashSet<TimeStamp> getNotAvail() {
+    public HashSet<Timestamp> getNotAvail() {
         return notAvail;
     }
 
-    public void setNotAvail(HashSet<TimeStamp> notAvail) {
+    public void setNotAvail(HashSet<Timestamp> notAvail) {
         this.notAvail = notAvail;
     }
 
@@ -144,7 +153,7 @@ public class DoctorEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.DoctorEntity[ id=" + id + " ]";
+        return "entity.DoctorEntity[ id=" + doctorId + " ]";
     }
     
 }

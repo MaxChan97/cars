@@ -5,7 +5,7 @@
  */
 package ejb.session.stateless;
 
-import entity.AppointmentEntity;
+
 import entity.ConsultationEntity;
 import javax.ejb.Local;
 import javax.ejb.Remote;
@@ -21,6 +21,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 @Local(ConsultationEntitySessionBeanRemote.class)
 @Remote(ConsultationEntitySessionBeanLocal.class)
+
 public class ConsultationEntitySessionBean implements ConsultationEntitySessionBeanRemote, ConsultationEntitySessionBeanLocal {
     
     
@@ -30,7 +31,9 @@ public class ConsultationEntitySessionBean implements ConsultationEntitySessionB
    public Long createConsultationEntity(ConsultationEntity consultationEntity){
         em.persist(consultationEntity);
         em.flush();
-        return consultationEntity.getId();
+
+        return consultationEntity.getConsultationId();
+
     }
     
     public ConsultationEntity retrieveConsultationEntityById(Long consultationId){
@@ -40,27 +43,22 @@ public class ConsultationEntitySessionBean implements ConsultationEntitySessionB
     
     public void updateConsultationEntity(ConsultationEntity consultation){
         //merge unmanaged state from client side to database
-        
         em.merge(consultation);
     }
     
     //delete by id, passing in an entity from the client will be unmanaged
+
     public void deleteConsultation(Long id){
         ConsultationEntity appointment = retrieveConsultationEntityById(id);
         em.remove(appointment);
     }
     
-    
-    /*One to One relationship, mandatory hence we need to have one 
-    public Long createAppointmentEntity(AppointmentEntity appointment, Long recordId){
-        em.persist(appointment);
-        ConsultationEntity consultation = em.find(ConsultationEntity.class, recordId);
-        
-        consultationEntity.setAppointmentEntity(appointment);
-        em.flush();
-        return consultationEntity.getId();
-        
+
+
+
+    public void deleteConsultationEntity(Long consultationId){
+        ConsultationEntity consultationEntity = retrieveConsultationEntityById(consultationId);
+        em.remove(consultationEntity);
     }
-*/
 
 }

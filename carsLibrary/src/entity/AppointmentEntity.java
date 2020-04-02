@@ -6,8 +6,7 @@
 package entity;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
+import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,8 +25,7 @@ public class AppointmentEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
-    private Date appointmentDate;
-    private Time appointmentTime;
+    private Timestamp appointmentTimestamp;
     
     @ManyToOne
     private PatientEntity patient;
@@ -40,11 +38,10 @@ public class AppointmentEntity implements Serializable {
     public AppointmentEntity() {
     }
 
-    public AppointmentEntity(Date appointmentDate, Time appointmentTime) {
+    public AppointmentEntity(Timestamp appointmentTimeStamp) {
         this();
         
-        this.appointmentDate = appointmentDate;
-        this.appointmentTime = appointmentTime;
+        this.appointmentTimestamp = appointmentTimeStamp;
     }
 
     public Long getAppointmentId() {
@@ -79,36 +76,6 @@ public class AppointmentEntity implements Serializable {
     public String toString() {
         return "entity.AppointmentEntity[ id=" + appointmentId + " ]";
     }
-
-    /**
-     * @return the appointmentDate
-     */
-    public Date getAppointmentDate() {
-        return appointmentDate;
-    }
-
-    /**
-     * @param appointmentDate the appointmentDate to set
-     */
-    public void setAppointmentDate(Date appointmentDate) {
-        this.appointmentDate = appointmentDate;
-    }
-
-    /**
-     * @return the appointmentTime
-     */
-    public Time getAppointmentTime() {
-        return appointmentTime;
-    }
-
-    /**
-     * @param appointmentTime the appointmentTime to set
-     */
-    public void setAppointmentTime(Time appointmentTime) {
-        this.appointmentTime = appointmentTime;
-    }
-    
-    //lifecycle methods
 
     /**
      * @return the patient
@@ -150,6 +117,20 @@ public class AppointmentEntity implements Serializable {
      */
     public void setConsultation(ConsultationEntity consultation) {
         this.consultation = consultation;
+    }
+
+    /**
+     * @return the appointmentTimestamp
+     */
+    public Timestamp getAppointmentTimestamp() {
+        return appointmentTimestamp;
+    }
+
+    /**
+     * @param appointmentTimestamp the appointmentTimestamp to set
+     */
+    public void setAppointmentTimestamp(Timestamp appointmentTimestamp) {
+        this.appointmentTimestamp = appointmentTimestamp;
     }
     
     

@@ -22,33 +22,26 @@ public class StaffEntitySessionBean implements StaffEntitySessionBeanRemote, Sta
     private EntityManager em;
     
     @Override
-    public Long createStaffEntity(StaffEntity staffEntity)
-    {
+    public Long createStaffEntity(StaffEntity staffEntity) {
         em.persist(staffEntity);
         em.flush();
         return staffEntity.getStaffId();
     }
     
     @Override
-    public StaffEntity retrieveStaffEntityById(Long id)
-    {
+    public StaffEntity retrieveStaffEntityById(Long id) {
         StaffEntity entity = em.find(StaffEntity.class, id);
         return entity;
     }
     
     @Override
-    public void updateStaffEntity(StaffEntity staffEntity)
-    {
+    public void updateStaffEntity(StaffEntity staffEntity) {
         em.merge(staffEntity);
     }
     
     @Override
-    public void deleteStaffEntity(Long id)
-    {
+    public void deleteStaffEntity(Long id) {
         StaffEntity entity = retrieveStaffEntityById(id);
         em.remove(entity);
     }
-    
-
-    
 }

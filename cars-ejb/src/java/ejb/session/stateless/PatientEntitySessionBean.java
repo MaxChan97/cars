@@ -5,12 +5,19 @@
  */
 package ejb.session.stateless;
 
+import entity.AppointmentEntity;
 import entity.PatientEntity;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import util.exception.InvalidInputException;
+import util.exception.InvalidLoginException;
+import util.exception.PatientNotFoundException;
 
 /**
  *
@@ -23,27 +30,76 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
 
    @PersistenceContext(unitName = "cars-ejbPU")
     private EntityManager em;
+
+    public PatientEntitySessionBean() {
+    }
    
-   @Override
-   public String createPatientEntity(PatientEntity patientEntity) {
-       em.persist(patientEntity);
-       em.flush();
-       return patientEntity.getIdentityNum();
-   }
+    @Override
+    public String createPatientEntity(PatientEntity patientEntity) {
+        em.persist(patientEntity);
+        em.flush();
+       
+        return patientEntity.getIdentityNum();
+    }
+    
+    @Override
+    public List<PatientEntity> retrieveAllPatientEntities() {
+        Query query = em.createQuery("SELECT p FROM PatientEntity p");
+        
+        return query.getResultList();
+    }
    
-   @Override
-   public PatientEntity retrievePatientEntityById(Long id) {
-       PatientEntity entity = em.find(PatientEntity.class, id);
-       return entity;
-   }
-   @Override
-   public void updatePatientEntity (PatientEntity patientEntity) {
-       em.merge(patientEntity);
-   }
+    @Override
+    public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException {
+        PatientEntity entity = em.find(PatientEntity.class, id);
+        
+        if (entity != null) {
+            return entity;
+        } else {
+            throw new PatientNotFoundException("Patient ID " + id + " does not exist!");
+        }
+    }
+    
+    public PatientEntity patientLogin(String identityNum, String password) throws InvalidLoginException {
+        try {
+            PatientEntity patientEntity = retrievePatientEntityByIdentityNum(identityNum);
+            
+            if(patientEntity.getPassword().equals(password)) {           
+                return patientEntity;
+            }
+            else {
+                throw new InvalidLoginException("Username does not exist or invalid password!");
+            }
+        }
+        catch(PatientNotFoundException ex) {
+            throw new InvalidLoginException("Username does not exist or invalid password!");
+        }
+    }
+    
+    @Override
+    public void updatePatientEntity(PatientEntity patientEntity) throws PatientNotFoundException, InvalidInputException {
+        PatientEntity pe = retrievePatientEntityByIdentityNum(patientEntity.getIdentityNum());
+        
+        pe.setAddress(patientEntity.getAddress());
+        pe.setAge(patientEntity.getAge());
+        pe.setAppointments(patientEntity.getAppointments());
+        pe.setFirstName(patientEntity.getFirstName());
+        pe.setLastName(patientEntity.getLastName());
+        pe.setGender(patientEntity.getGender());
+        pe.setIdentityNum(patientEntity.getIdentityNum());
+        pe.setPassword(patientEntity.getPassword());
+        pe.setPhoneNumber(patientEntity.getPhoneNumber());
+    }
    
-   @Override
-   public void deletePatientEntity (Long id) {
-       PatientEntity entity = retrievePatientEntityById(id);
-       em.remove(entity);
-   }
+    @Override
+    public void deletePatientEntity(String id) throws PatientNotFoundException, SQLIntegrityConstraintViolationException {
+        PatientEntity entity = retrievePatientEntityByIdentityNum(id);
+        
+        List<AppointmentEntity> appointmentEntities = entity.getAppointments();
+        for (AppointmentEntity ae : appointmentEntities) {
+            ae.setPatient(null);
+        }
+        
+        em.remove(entity);
+    }
 }

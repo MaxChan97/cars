@@ -25,30 +25,26 @@ public class ConsultationEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private static Integer queueNumberGenerator = 0;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long consultationId;
     private Integer queueNumber;
-    private Timestamp consultationTimestamp;
     private Integer duration;
-    
-    @ManyToOne
-    private PatientEntity patient;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private AppointmentEntity appointment;
 
     public ConsultationEntity() {
     }
 
-    public ConsultationEntity(Timestamp consultationTimestamp, Integer duration) {
+    public ConsultationEntity(Integer duration) {
         this();
-        
+
         this.queueNumber = ++queueNumberGenerator;
-        this.consultationTimestamp = consultationTimestamp;
         this.duration = duration;
     }
-    
+
     public static void resetQueueNumberGenerator() {
         queueNumberGenerator = 0;
     }
@@ -104,39 +100,9 @@ public class ConsultationEntity implements Serializable {
     public void setAppointment(AppointmentEntity appointment) {
         this.appointment = appointment;
     }
-    
 
     @Override
     public String toString() {
         return "entity.ConsultationEntity[ id=" + consultationId + " ]";
     }
-
-    /**
-     * @return the patient
-     */
-    public PatientEntity getPatient() {
-        return patient;
-    }
-
-    /**
-     * @param patient the patient to set
-     */
-    public void setPatient(PatientEntity patient) {
-        this.patient = patient;
-    }
-
-    /**
-     * @return the consultationTimestamp
-     */
-    public Timestamp getConsultationTimestamp() {
-        return consultationTimestamp;
-    }
-
-    /**
-     * @param consultationTimestamp the consultationTimestamp to set
-     */
-    public void setConsultationTimestamp(Timestamp consultationTimestamp) {
-        this.consultationTimestamp = consultationTimestamp;
-    }
-    
 }

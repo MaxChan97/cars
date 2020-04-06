@@ -25,26 +25,24 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
     private EntityManager em;
    
    @Override
-   public String createPatientEntity(PatientEntity patientEntity){
+   public String createPatientEntity(PatientEntity patientEntity) {
        em.persist(patientEntity);
        em.flush();
        return patientEntity.getIdentityNum();
    }
    
    @Override
-   public PatientEntity retrievePatientEntityById(Long id){
+   public PatientEntity retrievePatientEntityById(Long id) {
        PatientEntity entity = em.find(PatientEntity.class, id);
        return entity;
    }
    @Override
-   public void updatePatientEntity (PatientEntity patientEntity)
-   {
+   public void updatePatientEntity (PatientEntity patientEntity) {
        em.merge(patientEntity);
    }
    
    @Override
-   public void deletePatientEntity (Long id)
-   {
+   public void deletePatientEntity (Long id) {
        PatientEntity entity = retrievePatientEntityById(id);
        em.remove(entity);
    }

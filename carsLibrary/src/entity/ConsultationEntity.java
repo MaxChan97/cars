@@ -6,8 +6,7 @@
 package entity;
 
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Time;
+import java.sql.Timestamp;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,12 +24,13 @@ import javax.persistence.OneToOne;
 public class ConsultationEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static Integer queueNumberGenerator = 0;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long consultationId;
     private Integer queueNumber;
-    private Date consultationDate;
-    private Time consulatationTime;
+    private Timestamp consultationTimestamp;
     private Integer duration;
     
     @ManyToOne
@@ -41,13 +41,16 @@ public class ConsultationEntity implements Serializable {
     public ConsultationEntity() {
     }
 
-    public ConsultationEntity(Integer queueNumber, Date consultationDate, Time consulatationTime, Integer duration) {
+    public ConsultationEntity(Timestamp consultationTimestamp, Integer duration) {
         this();
         
-        this.queueNumber = queueNumber;
-        this.consultationDate = consultationDate;
-        this.consulatationTime = consulatationTime;
+        this.queueNumber = ++queueNumberGenerator;
+        this.consultationTimestamp = consultationTimestamp;
         this.duration = duration;
+    }
+    
+    public static void resetQueueNumberGenerator() {
+        queueNumberGenerator = 0;
     }
 
     public Long getConsultationId() {
@@ -86,22 +89,6 @@ public class ConsultationEntity implements Serializable {
         this.queueNumber = queueNumber;
     }
 
-    public Date getConsultationDate() {
-        return consultationDate;
-    }
-
-    public void setConsultationDate(Date consultationDate) {
-        this.consultationDate = consultationDate;
-    }
-
-    public Time getConsulatationTime() {
-        return consulatationTime;
-    }
-
-    public void setConsulatationTime(Time consulatationTime) {
-        this.consulatationTime = consulatationTime;
-    }
-
     public Integer getDuration() {
         return duration;
     }
@@ -136,6 +123,20 @@ public class ConsultationEntity implements Serializable {
      */
     public void setPatient(PatientEntity patient) {
         this.patient = patient;
+    }
+
+    /**
+     * @return the consultationTimestamp
+     */
+    public Timestamp getConsultationTimestamp() {
+        return consultationTimestamp;
+    }
+
+    /**
+     * @param consultationTimestamp the consultationTimestamp to set
+     */
+    public void setConsultationTimestamp(Timestamp consultationTimestamp) {
+        this.consultationTimestamp = consultationTimestamp;
     }
     
 }

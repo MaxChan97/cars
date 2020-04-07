@@ -6,14 +6,25 @@
 package ejb.session.stateless;
 
 import entity.StaffEntity;
-
-
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
+import util.exception.InvalidLoginException;
+import util.exception.StaffNotFoundException;
 
 public interface StaffEntitySessionBeanLocal {
-     public Long createStaffEntity(StaffEntity staffEntity);
-     public StaffEntity retrieveStaffEntityById(Long id);
-     public void updateStaffEntity(StaffEntity staffEntity);
-     public void deleteStaffEntity(Long id);
-      
-    
+
+    public Long createStaffEntity(StaffEntity staffEntity);
+
+    public List<StaffEntity> retrieveAllStaffEntities();
+
+    public StaffEntity retrieveStaffEntityById(Long id) throws StaffNotFoundException;
+
+    public StaffEntity retrieveStaffEntityByUsername(String userName) throws StaffNotFoundException;
+
+    public StaffEntity staffLogin(String username, String password) throws InvalidLoginException;
+
+    public void updateStaffEntity(StaffEntity staffEntity) throws StaffNotFoundException;
+
+    public void deleteStaffEntity(Long id) throws StaffNotFoundException, SQLIntegrityConstraintViolationException;
+
 }

@@ -8,6 +8,7 @@ package entity;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import javax.persistence.Column;
@@ -16,7 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+
 
 /**
  *
@@ -45,10 +46,11 @@ public class DoctorEntity implements Serializable {
     @OneToMany(mappedBy = "doctor")
     private List<AppointmentEntity> appointments;
     
-    @Transient
-    private String fullName;
 
     public DoctorEntity() {
+        this.appointments = new ArrayList<AppointmentEntity>();
+        this.notAvail = new HashSet<>();
+        this.leaves = new HashSet<>();
     }
 
     public DoctorEntity(String firstName, String lastName, String registration, String qualification) {
@@ -63,8 +65,7 @@ public class DoctorEntity implements Serializable {
     
     
     public String getFullName(){
-        this.fullName = this.firstName + " " + this.lastName;
-        return this.fullName;
+        return this.firstName + " " + this.lastName;
     }
 
     public Long getDoctorId() {

@@ -151,6 +151,19 @@ public class DoctorEntity implements Serializable {
     public void setAppointments(List<AppointmentEntity> appointments) {
         this.appointments = appointments;
     }
+    
+    /*
+    public void viewAvailableTimingforTheDay(Date date){
+        if(leaves.contains(date)){
+            System.out.print("Doctor on leave on " + date);
+        }else{
+            if()
+            
+            
+            }
+        }date.g
+    }
+*/
 
     @Override
     public String toString() {

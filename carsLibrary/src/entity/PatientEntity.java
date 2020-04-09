@@ -167,7 +167,7 @@ public class PatientEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.PatientEntity[ id=" + identityNum + " ]";
+        return "Patient[ identity number =" + identityNum + "name =  " + this.firstName + " " + this.lastName + " gender= " + this.gender + " age= " + this.age + " phone =" + this.phoneNumber + "address =" + this.address +  " ]";
     }
 
 }

@@ -29,6 +29,8 @@ public class MainApp {
     private RegistrationOperationModule registrationOperationModule;
     
     private StaffEntity currentStaffEntity;
+    
+    private AppointmentOperationsModule appointmentOperationModule;
 
     public MainApp() {
     }
@@ -124,7 +126,7 @@ public class MainApp {
                     registrationOperationModule.menuRegistrationOperation();
                 }
                 else if (response == 2) {
-                    //appointmentOperationModule.menuAppointmentOperation();
+                    appointmentOperationModule.menuAppointmentOperation();
                 }
                 else if (response == 3) {
                     //administrationOperationModule.menuAdministrationOperation();

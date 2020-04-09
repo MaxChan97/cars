@@ -8,13 +8,15 @@ package ejb.session.stateless;
 import entity.AppointmentEntity;
 import entity.PatientEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import util.exception.DoctorNotFoundException;
 import util.exception.InvalidInputException;
 import util.exception.InvalidLoginException;
 import util.exception.PatientNotFoundException;
@@ -101,5 +103,22 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         }
         
         em.remove(entity);
+    }
+    
+    public List<AppointmentEntity> viewAppointmentmentByPatientId(String patientId) throws PatientNotFoundException{
+        PatientEntity toView =  retrievePatientEntityByIdentityNum(patientId);
+        return toView.getAppointments();   
+    }
+    
+    public void addAppointment(Long doctorId, Date appointmentDate)throws DoctorNotFoundException{
+        
+        
+        
+        
+        
+    }
+    
+    public void cancelAppointment(String patientId, Long appointmentId){
+        
     }
 }

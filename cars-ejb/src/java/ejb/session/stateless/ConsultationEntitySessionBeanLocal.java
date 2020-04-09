@@ -6,18 +6,24 @@
 package ejb.session.stateless;
 
 import entity.ConsultationEntity;
-
-
+import java.util.List;
+import util.exception.AppointmentNotFoundException;
+import util.exception.ConsultationNotFoundException;
 
 /**
  *
  * @author Lenovo
  */
-
 public interface ConsultationEntitySessionBeanLocal {
-     public Long createConsultationEntity(ConsultationEntity consultationEntity);
-     public ConsultationEntity retrieveConsultationEntityById(Long consultationId);
-     public void updateConsultationEntity(ConsultationEntity consultation);
-     public void deleteConsultation(Long id);
-    
+
+    public Long createConsultationEntity(Long appointmentId, Integer duration) throws AppointmentNotFoundException;
+
+    public List<ConsultationEntity> retrieveAllConsultationEntities();
+
+    public ConsultationEntity retrieveConsultationEntityById(Long consultationId) throws ConsultationNotFoundException;
+
+    public void updateConsultationEntity(ConsultationEntity consultation) throws ConsultationNotFoundException;
+
+    public void deleteConsultationEntity(Long consultationId) throws ConsultationNotFoundException;
+
 }

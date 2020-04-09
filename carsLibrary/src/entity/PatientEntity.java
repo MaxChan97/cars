@@ -6,6 +6,7 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -24,34 +26,33 @@ public class PatientEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private String identityNum;
-    
-    @Column(length = 6, nullable=false)
+
+    @Column(nullable = false)
     private String password;
     @Column(length = 255)
     private String firstName;
     @Column(length = 255)
     private String lastName;
-    
+
     //@Enumerated(EnumType.STRING)
     private String gender; // wanna use enum?
     @Column(nullable = false)
     private Integer age;
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false)
     private String phoneNumber;
     @Column(nullable = false)
     private String address;
-    
+
     @OneToMany(mappedBy = "patient")
     private List<AppointmentEntity> appointments;
-    @OneToMany(mappedBy = "patient")
-    private List<ConsultationEntity> consultations;
 
     public PatientEntity() {
+        this.appointments = new ArrayList<AppointmentEntity>();
     }
 
     public PatientEntity(String identityNum, String password, String firstName, String lastName, String gender, Integer age, String phoneNumber, String address) {
         this();
-        
+
         this.identityNum = identityNum;
         this.password = password;
         this.firstName = firstName;
@@ -61,8 +62,6 @@ public class PatientEntity implements Serializable {
         this.phoneNumber = phoneNumber;
         this.address = address;
     }
-    
-    
 
     @Override
     public int hashCode() {
@@ -119,9 +118,19 @@ public class PatientEntity implements Serializable {
     public String getGender() {
         return gender;
     }
+    
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setGender(String gender) throws InvalidInputException {
+        if (gender.equals("M") || gender.equals("m") || gender.equals("male") || gender.equals("Male")) {
+            this.gender = "M";
+        } else if (gender.equals("F") || gender.equals("f") || gender.equals("female") || gender.equals("Female")) {
+            this.gender = "F";
+        } else {
+            throw new InvalidInputException("Gender entered is not valid!");
+        }
     }
 
     public Integer getAge() {
@@ -156,17 +165,9 @@ public class PatientEntity implements Serializable {
         this.appointments = appointments;
     }
 
-    public List<ConsultationEntity> getConsultations() {
-        return consultations;
-    }
-
-    public void setConsultations(List<ConsultationEntity> consultations) {
-        this.consultations = consultations;
-    }
-
     @Override
     public String toString() {
-        return "entity.PatientEntity[ id=" + identityNum + " ]";
+        return "Patient[ identity number =" + identityNum + "name =  " + this.firstName + " " + this.lastName + " gender= " + this.gender + " age= " + this.age + " phone =" + this.phoneNumber + "address =" + this.address +  " ]";
     }
-    
+
 }

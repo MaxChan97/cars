@@ -5,7 +5,11 @@
  */
 package ejb.session.stateless;
 
+import entity.ConsultationEntity;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.AppointmentNotFoundException;
+import util.exception.ConsultationNotFoundException;
 
 /**
  *
@@ -13,5 +17,14 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface ConsultationEntitySessionBeanRemote {
-    
+
+    public Long createConsultationEntity(Long appointmentId, Integer duration) throws AppointmentNotFoundException;
+
+    public List<ConsultationEntity> retrieveAllConsultationEntities();
+
+    public ConsultationEntity retrieveConsultationEntityById(Long consultationId) throws ConsultationNotFoundException;
+
+    public void updateConsultationEntity(ConsultationEntity consultation) throws ConsultationNotFoundException;
+
+    public void deleteConsultationEntity(Long consultationId) throws ConsultationNotFoundException;
 }

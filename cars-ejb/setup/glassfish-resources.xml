@@ -11,6 +11,5 @@
     <property name="autoConnect" value="true"/>
     <property name="useSSL" value="false"/>
     <property name="allowPublicKeyRetrieval" value="true"/>
-
   </jdbc-connection-pool>
 </resources>

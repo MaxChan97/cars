@@ -5,7 +5,13 @@
  */
 package ejb.session.stateless;
 
+import entity.PatientEntity;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 import javax.ejb.Remote;
+import util.exception.InvalidInputException;
+import util.exception.InvalidLoginException;
+import util.exception.PatientNotFoundException;
 
 /**
  *
@@ -13,5 +19,16 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface PatientEntitySessionBeanRemote {
-    
+
+    public String createPatientEntity(PatientEntity patientEntity);
+
+    public List<PatientEntity> retrieveAllPatientEntities();
+
+    public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException;
+
+    public PatientEntity patientLogin(String identityNum, String password) throws InvalidLoginException;
+
+    public void updatePatientEntity(PatientEntity patientEntity) throws PatientNotFoundException, InvalidInputException;
+
+    public void deletePatientEntity(String id) throws PatientNotFoundException, SQLIntegrityConstraintViolationException;
 }

@@ -94,7 +94,7 @@ public class RegistrationOperationModule {
             System.out.print("Enter First Name> ");
             newPatientEntity.setFirstName(scanner.nextLine().trim());
             System.out.print("Enter Last Name> ");
-            newPatientEntity.setFirstName(scanner.nextLine().trim());
+            newPatientEntity.setLastName(scanner.nextLine().trim());
             System.out.print("Enter Gender> ");
             newPatientEntity.setGender(scanner.nextLine().trim());
             System.out.print("Enter Age> ");
@@ -203,10 +203,18 @@ public class RegistrationOperationModule {
             for (Time timeSlot : availableForWalkIn) {
                 if (!doctorEntity.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(), 
                             currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
-                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0))) {
+                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0)) && doctorIsFreeForWalkIn == false) {
                     appointmentTimestamp = new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(), 
                             timeSlot.getHours(), timeSlot.getMinutes(), timeSlot.getSeconds(), 0); 
                     doctorIsFreeForWalkIn = true;
+                } else if (!doctorEntity.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(), 
+                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
+                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0)) && doctorIsFreeForWalkIn == true
+                            && appointmentTimestamp.after(new Timestamp(currentTimestamp.getYear(), 
+                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
+                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0))) {
+                    appointmentTimestamp = new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(), 
+                            timeSlot.getHours(), timeSlot.getMinutes(), timeSlot.getSeconds(), 0);
                 }
             }
             if (doctorIsFreeForWalkIn == false) {
@@ -239,7 +247,9 @@ public class RegistrationOperationModule {
             List<AppointmentEntity> allPatientAppointments = patientEntity.getAppointments();
             List<AppointmentEntity> appointments = new ArrayList<>();
             for (AppointmentEntity ae : allPatientAppointments) {
-                if (sameDay(ae.getAppointmentTimestamp(), currentTimestamp) && (ae.getAppointmentTimestamp().after(currentTimestamp) || ae.getAppointmentTimestamp().equals(currentTimestamp))) {
+                if (sameDay(ae.getAppointmentTimestamp(), currentTimestamp) 
+                        && (ae.getAppointmentTimestamp().after(currentTimestamp) || ae.getAppointmentTimestamp().equals(currentTimestamp))
+                        && ae.getConsultation() == null) {
                     appointments.add(ae);
                 }
             }

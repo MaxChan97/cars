@@ -238,7 +238,7 @@ public class AdministrationOperationsModule {
                      
                      try{
                      DoctorEntity doctorToUpdateLeave = doctorEntitySessionBean.retrieveDoctorEntityById(id);
-                     Date date = new Date(year,month,dateEntered);
+                     Date date = new Date(year,month,dateEntered);// check leave constraints leaves applied 2 weeks in advance
                      doctorToUpdateLeave.getLeaves().add(date);
                      doctorEntitySessionBean.updateDoctorEntity(doctorToUpdateLeave);
                      System.out.println("Leave successfully updated");

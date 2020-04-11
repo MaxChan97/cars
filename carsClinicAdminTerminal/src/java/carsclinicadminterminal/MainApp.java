@@ -25,11 +25,10 @@ public class MainApp {
     private AppointmentEntitySessionBeanRemote appointmentEntitySessionBean;
     private ConsultationEntitySessionBeanRemote consultationEntitySessionBean;
     private StaffEntitySessionBeanRemote staffEntitySessionBean;
-    
-    private RegistrationOperationModule registrationOperationModule;
-    
     private StaffEntity currentStaffEntity;
     
+    private RegistrationOperationModule registrationOperationModule;
+    private AdministrationOperationsModule administrationOperationsModule;
     private AppointmentOperationsModule appointmentOperationModule;
 
     public MainApp() {
@@ -64,7 +63,8 @@ public class MainApp {
                         System.out.println("Login successful!\n");
                         
                         registrationOperationModule = new RegistrationOperationModule(patientEntitySessionBean,doctorEntitySessionBean,appointmentEntitySessionBean,consultationEntitySessionBean);
-                        
+                        administrationOperationsModule = new AdministrationOperationsModule( patientEntitySessionBean,  doctorEntitySessionBean, staffEntitySessionBean);
+                        appointmentOperationModule = new AppointmentOperationsModule( patientEntitySessionBean, doctorEntitySessionBean, appointmentEntitySessionBean);
                         menuMain();
                     }
                     catch(InvalidLoginException ex) {
@@ -129,7 +129,7 @@ public class MainApp {
                     appointmentOperationModule.menuAppointmentOperation();
                 }
                 else if (response == 3) {
-                    //administrationOperationModule.menuAdministrationOperation();
+                    administrationOperationsModule.menuAdministrationOperation();
                 }
                 else if (response == 4) {
                     break;

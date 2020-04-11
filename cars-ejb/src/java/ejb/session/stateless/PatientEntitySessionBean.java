@@ -118,7 +118,16 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         
     }
     
-    public void cancelAppointment(String patientId, Long appointmentId){
+    public void cancelAppointment(Long appointmentIdToDelete,String patientId) throws PatientNotFoundException{
+       
+        PatientEntity patient = retrievePatientEntityByIdentityNum(patientId);
+        List<AppointmentEntity> appointments = patient.getAppointments();
+        for(AppointmentEntity appointment : appointments){
+            if(appointment.getAppointmentId()== appointmentIdToDelete){
+                appointments.remove(appointment);
+                
+            }
+        }
         
     }
 }

@@ -58,8 +58,11 @@ public class AppointmentOperationsModule {
                     scanner.nextLine();
                     System.out.print("Enter patient identity number to view appointments> ");
                     String id1 = scanner.nextLine().trim();
+                    
                     try{
-                        List<AppointmentEntity> appointments = patientEntitySessionBean.viewAppointmentmentByPatientId(id1);
+                        PatientEntity patient = patientEntitySessionBean.retrievePatientEntityByIdentityNum(id1);
+                        List<AppointmentEntity> appointments = patient.getAppointments();
+                        //List<AppointmentEntity> appointments = patientEntitySessionBean.viewAppointmentmentByPatientId(id1);
                         System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", "ID"," | ", "Date"," | ", "Time"," | ", "Doctor");
                         for(AppointmentEntity appointment : appointments){
                             System.out.printf("%8s%2s%20d%2s%20d%2s%15s\n",appointment.getAppointmentId().toString()," | ", appointment.getAppointmentTimestamp().getDate()," | ", appointment.getAppointmentTimestamp().getHours(), " | ", appointment.getDoctor());

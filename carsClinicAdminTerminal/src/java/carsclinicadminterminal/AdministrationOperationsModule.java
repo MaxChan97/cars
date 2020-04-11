@@ -359,11 +359,11 @@ public class AdministrationOperationsModule {
                      Long idLeave = scanner.nextLong();
                      scanner.nextLine();
                     
-                     System.out.println("Enter date that doctor " + idLeave + " wishes to apply for leaves in the following format YYYY-MM-DD>");
-                     scanner.useDelimiter("-");
-                     int year = Integer.parseInt(scanner.next())-1900;
-                     int month = Integer.parseInt(scanner.next())-1;
-                     int date = Integer.parseInt(scanner.next());
+                     System.out.println("Enter date that doctor " + idLeave + " wishes to apply for leaves in the following format YYYY MM DD>");
+                 
+                     int year = scanner.nextInt()-1900;
+                     int month = scanner.nextInt()-1;
+                     int date = scanner.nextInt();
                     
                      try{
                      DoctorEntity doctorToUpdateLeave = doctorEntitySessionBean.retrieveDoctorEntityById(idLeave);
@@ -371,8 +371,8 @@ public class AdministrationOperationsModule {
                      ArrayList<Date> datesAppliedForLeaves = doctorToUpdateLeave.getDatesAppliedForLeaves();
                      Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
                      
-                     
-                     Date currentDate = new Date(currentTimestamp.getYear()-1900,currentTimestamp.getMonth()-1,currentTimestamp.getDate());
+                     Date currentDate = new Date(currentTimestamp.getYear(),currentTimestamp.getMonth(),currentTimestamp.getDate());
+                     //Date currentDate = new Date(currentTimestamp.getYear()-1900,currentTimestamp.getMonth()-1,currentTimestamp.getDate());
                      Date dateToApplyLeave = new Date(year,month,date);
                      Long dayDifference = (dateToApplyLeave.getTime()- currentDate.getTime())/(24*60*60*1000);
                     
@@ -383,10 +383,11 @@ public class AdministrationOperationsModule {
                      }else{
                          for(int i=0;i<datesAppliedForLeaves.size();i++){
                              Date temp = datesAppliedForLeaves.get(i);
-                             if(dayDiff(currentDate,temp)>=7 ){
-                                 canApply=true;
+                             if(dayDiff(currentDate,temp)<7 ){
+                                 canApply=false;
+                                 throw new IllegalArgumentException("You have to wait " + (7-dayDiff(currentDate,temp)) + " to apply for a leave" );
                              }else{
-                                 canApply = false;
+                                 canApply = true;
                              }
                          }
                          canApply=false;
@@ -396,7 +397,7 @@ public class AdministrationOperationsModule {
                      // one leave a week and  1 week in advance
                      // if doctor has apointments on that day,he cannot apply for leave
                      if(dayDifference <0){
-                         throw new IllegalArgumentException("Invalid date entered");
+                         throw new IllegalArgumentException("Invalid date entered! Given date has already passed!");
                      }
                      if(dayDifference<7){
                          throw new IllegalArgumentException("Leave is less than a week from today. Doctor cannot apply for leave on given date " + dateToApplyLeave);
@@ -409,7 +410,7 @@ public class AdministrationOperationsModule {
                          }else if(canApply){
                              doctorToUpdateLeave.getLeaves().add(dateToApplyLeave);
                              doctorToUpdateLeave.getDatesAppliedForLeaves().add(currentDate);
-                             System.out.println("Leave successfully applied on " + dateToApplyLeave + "on " + currentDate );
+                             System.out.println("Leave successfully applied on " + dateToApplyLeave + " on " + currentDate );
                              
                              canApply = false;
                          }else{
@@ -418,7 +419,7 @@ public class AdministrationOperationsModule {
                      }
                 
                      doctorEntitySessionBean.updateDoctorEntity(doctorToUpdateLeave);
-                     System.out.println("Leave successfully updated");
+                     //System.out.println("Leave successfully updated");
                      
                      }catch(Exception ex){
                         System.err.println(ex.getMessage());

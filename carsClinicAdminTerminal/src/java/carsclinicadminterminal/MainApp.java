@@ -28,9 +28,11 @@ public class MainApp {
     
     private RegistrationOperationModule registrationOperationModule;
     
-    private StaffEntity currentStaffEntity;
-    
     private AppointmentOperationsModule appointmentOperationModule;
+    
+    private AdministrationOperationsModule administrationOperationModule;
+    
+    private StaffEntity currentStaffEntity;
 
     public MainApp() {
     }
@@ -64,6 +66,7 @@ public class MainApp {
                         System.out.println("Login successful!\n");
                         
                         registrationOperationModule = new RegistrationOperationModule(patientEntitySessionBean,doctorEntitySessionBean,appointmentEntitySessionBean,consultationEntitySessionBean);
+                        administrationOperationModule = new AdministrationOperationsModule(patientEntitySessionBean,doctorEntitySessionBean,staffEntitySessionBean);
                         
                         menuMain();
                     }
@@ -110,7 +113,7 @@ public class MainApp {
         
         while(true) {
             System.out.println("*** CARS :: Main ***\n");
-            System.out.println("You are login as " + currentStaffEntity.getFullName() + "\n");
+            System.out.println("You are logged in as " + currentStaffEntity.getFullName() + "\n");
             System.out.println("1: Registration Operation");
             System.out.println("2: Appointment Operation");
             System.out.println("3: Administration Operation");
@@ -129,7 +132,7 @@ public class MainApp {
                     appointmentOperationModule.menuAppointmentOperation();
                 }
                 else if (response == 3) {
-                    //administrationOperationModule.menuAdministrationOperation();
+                    administrationOperationModule.menuAdministrationOperation();
                 }
                 else if (response == 4) {
                     break;
@@ -139,7 +142,7 @@ public class MainApp {
                 }
             }
             
-            if(response == 2) {
+            if(response == 4) {
                 break;
             }
         }

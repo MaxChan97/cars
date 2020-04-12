@@ -54,6 +54,7 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
     @Override
     public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException {
         PatientEntity entity = em.find(PatientEntity.class, id);
+        entity.getAppointments().size();
         
         if (entity != null) {
             return entity;

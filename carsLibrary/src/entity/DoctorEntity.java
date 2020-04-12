@@ -51,7 +51,7 @@ public class DoctorEntity implements Serializable {
     private ArrayList<Date> datesAppliedForLeaves;
 
     
-    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE)
+    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE,orphanRemoval=true)
     private List<AppointmentEntity> appointments;
     
 

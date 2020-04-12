@@ -126,9 +126,7 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         for(AppointmentEntity appointment : appointments){
             if(appointment.getAppointmentId()== appointmentIdToDelete){
                 appointments.remove(appointment);
-                
             }
-        }
-        
+        }   
     }
 }

@@ -366,7 +366,7 @@ public class AdministrationOperationsModule {
                         DoctorEntity doctorToUpdateLeave = doctorEntitySessionBean.retrieveDoctorEntityById(idLeave);
                         boolean canApply;
                         ArrayList<Date> datesAppliedForLeaves = doctorToUpdateLeave.getDatesAppliedForLeaves();
-                        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                        Timestamp currentTimestamp = new Timestamp(2020-1900, 4-1, 13, 16, 15, 0, 0);
 
                         Date currentDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
                         //Date currentDate = new Date(currentTimestamp.getYear()-1900,currentTimestamp.getMonth()-1,currentTimestamp.getDate());

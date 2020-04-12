@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -43,7 +44,14 @@ public class DoctorEntity implements Serializable {
     @Column(nullable = false)
     private HashSet<Date> leaves;
     
-    @OneToMany(mappedBy = "doctor")
+    @Column(nullable = false)
+    private HashSet<Date> datesWithAppointments;
+    
+    @Column(nullable = false)
+    private ArrayList<Date> datesAppliedForLeaves;
+
+    
+    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE)
     private List<AppointmentEntity> appointments;
     
 
@@ -51,6 +59,8 @@ public class DoctorEntity implements Serializable {
         this.appointments = new ArrayList<AppointmentEntity>();
         this.notAvail = new HashSet<>();
         this.leaves = new HashSet<>();
+        this.datesWithAppointments = new HashSet<>();
+        datesAppliedForLeaves =  new ArrayList<>();
     }
 
     public DoctorEntity(String firstName, String lastName, String registration, String qualification) {
@@ -62,7 +72,7 @@ public class DoctorEntity implements Serializable {
         this.qualification = qualification;
     }
     
-    
+   
     
     public String getFullName(){
         return this.firstName + " " + this.lastName;
@@ -152,22 +162,27 @@ public class DoctorEntity implements Serializable {
         this.appointments = appointments;
     }
     
-    /*
-    public void viewAvailableTimingforTheDay(Date date){
-        if(leaves.contains(date)){
-            System.out.print("Doctor on leave on " + date);
-        }else{
-            if()
-            
-            
-            }
-        }date.g
+    public HashSet<Date> getDatesWithAppointments() {
+        return datesWithAppointments;
     }
-*/
+
+    public void setDatesWithAppointments(HashSet<Date> dateWithAppointments) {
+        this.datesWithAppointments = dateWithAppointments;
+    }
+
+    public ArrayList<Date> getDatesAppliedForLeaves() {
+        return datesAppliedForLeaves;
+    }
+
+    public void setDatesAppliedForLeaves(ArrayList<Date> datesAppliedForLeaves) {
+        this.datesAppliedForLeaves = datesAppliedForLeaves;
+    }
+    
+ 
 
     @Override
     public String toString() {
-        return "entity.DoctorEntity[ id=" + doctorId + " ]";
+        return "Doctor[ id=" + doctorId + " first name =" + this.firstName + " last name=" + this.lastName + " registration number =" + this.registration + " qualification=" + this.qualification +" ]";
     }
     
 }

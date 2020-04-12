@@ -5,6 +5,7 @@
  */
 package ejb.session.stateless;
 
+import entity.AppointmentEntity;
 import entity.PatientEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
@@ -21,6 +22,10 @@ public interface PatientEntitySessionBeanLocal {
     public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException;
 
     public PatientEntity patientLogin(String identityNum, String password) throws InvalidLoginException;
+    
+    public List<AppointmentEntity> viewAppointmentmentByPatientId(String patientId) throws PatientNotFoundException;
+    
+    public void cancelAppointment(Long appointmentIdToDelete,String patientId) throws PatientNotFoundException;
 
     public void updatePatientEntity(PatientEntity patientEntity) throws PatientNotFoundException, InvalidInputException;
 

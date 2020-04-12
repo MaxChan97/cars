@@ -48,6 +48,10 @@ public class ConsultationEntity implements Serializable {
     public static void resetQueueNumberGenerator() {
         queueNumberGenerator = 0;
     }
+    
+    public static void incrementQueueNumber() {
+        queueNumberGenerator++;
+    }
 
     public Long getConsultationId() {
         return consultationId;

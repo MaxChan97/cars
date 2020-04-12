@@ -102,7 +102,7 @@ public class StaffEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.StaffEntity[ id=" + staffId + " ]";
+        return "StaffEntity[ id=" + staffId + " name= " + this.firstName + " " + this.lastName +" ]";
     }
 
     /**

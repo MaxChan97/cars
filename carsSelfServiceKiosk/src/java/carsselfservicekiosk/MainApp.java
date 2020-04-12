@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package carsclinicadminterminal;
+package carsselfservicekiosk;
 
 import ejb.session.stateless.AppointmentEntitySessionBeanRemote;
 import ejb.session.stateless.ConsultationEntitySessionBeanRemote;
 import ejb.session.stateless.DoctorEntitySessionBeanRemote;
 import ejb.session.stateless.PatientEntitySessionBeanRemote;
+import ejb.session.stateless.StaffEntitySessionBeanRemote;
 import entity.AppointmentEntity;
-import entity.ConsultationEntity;
 import entity.DoctorEntity;
 import entity.PatientEntity;
 import java.sql.Date;
@@ -22,71 +22,85 @@ import java.util.List;
 import java.util.Scanner;
 import util.exception.DoctorNotAvailableForWalkInException;
 import util.exception.InvalidInputException;
+import util.exception.InvalidLoginException;
 import util.exception.NoAvailableDoctorsException;
 
 /**
  *
  * @author Max
  */
-public class RegistrationOperationModule {
+public class MainApp {
     
     private PatientEntitySessionBeanRemote patientEntitySessionBean;
     private DoctorEntitySessionBeanRemote doctorEntitySessionBean;
     private AppointmentEntitySessionBeanRemote appointmentEntitySessionBean;
     private ConsultationEntitySessionBeanRemote consultationEntitySessionBean;
+    private StaffEntitySessionBeanRemote staffEntitySessionBean;
+    
+    private PatientEntity currentPatientEntity;
 
-    public RegistrationOperationModule() {
+    public MainApp() {
     }
 
-    public RegistrationOperationModule(PatientEntitySessionBeanRemote patientEntitySessionBean, DoctorEntitySessionBeanRemote doctorEntitySessionBean, AppointmentEntitySessionBeanRemote appointmentEntitySessionBean, ConsultationEntitySessionBeanRemote consultationEntitySessionBean) {
+    public MainApp(PatientEntitySessionBeanRemote patientEntitySessionBean, DoctorEntitySessionBeanRemote doctorEntitySessionBean, AppointmentEntitySessionBeanRemote appointmentEntitySessionBean, ConsultationEntitySessionBeanRemote consultationEntitySessionBean, StaffEntitySessionBeanRemote staffEntitySessionBean) {
         this.patientEntitySessionBean = patientEntitySessionBean;
         this.doctorEntitySessionBean = doctorEntitySessionBean;
         this.appointmentEntitySessionBean = appointmentEntitySessionBean;
         this.consultationEntitySessionBean = consultationEntitySessionBean;
+        this.staffEntitySessionBean = staffEntitySessionBean;
     }
-
-    public void menuRegistrationOperation() {
+    
+    public void runApp() {
         Scanner scanner = new Scanner(System.in);
         Integer response = 0;
-
-        while (true) {
-            System.out.println("*** CARS :: Registration Operation ***\n");
-            System.out.println("1: Register New Patient");
-            System.out.println("2: Register Walk-In Consultation");
-            System.out.println("3: Register Consultation By Appointment");
-            System.out.println("4: Back\n");
+        
+        while(true) {
+            System.out.println("*** Welcome to Self-Service Kiosk ***\n");
+            System.out.println("1: Register");
+            System.out.println("2: Login");
+            System.out.println("3: Exit\n");
             response = 0;
-
-            while (response < 1 || response > 4) {
+            
+            while(response < 1 || response > 3) {
                 System.out.print("> ");
 
                 response = scanner.nextInt();
 
                 if (response == 1) {
                     doRegisterNewPatient();
-                } else if (response == 2) {
-                    doRegisterWalkInConsultation();
-                } else if (response == 3) {
-                    doRegisterConsultationByAppointment();
-                } else if (response == 4) {
+                    
+                }
+                else if(response == 2) {
+                    try {
+                        doLogin();
+                        System.out.println("Login successful!\n");
+                        
+                        menuMain();
+                    }
+                    catch(InvalidLoginException ex) {
+                        System.out.println("Invalid login credential: " + ex.getMessage() + "\n");
+                    }
+                }
+                else if (response == 3) {
                     break;
-                } else {
-                    System.out.println("Invalid option, please try again!\n");
+                }
+                else {
+                    System.out.println("Invalid option, please try again!\n");                
                 }
             }
-
-            if (response == 4) {
+            
+            if(response == 3) {
                 break;
             }
         }
     }
-
+    
     private void doRegisterNewPatient() {
         try {
             Scanner scanner = new Scanner(System.in);
             PatientEntity newPatientEntity = new PatientEntity();
 
-            System.out.println("*** CARS :: Registration Operation :: Register New Patient ***\n");
+            System.out.println("*** Self-Service Kiosk :: Register ***\n");
             System.out.print("Enter Identity Number> ");
             newPatientEntity.setIdentityNum(scanner.nextLine().trim());
             System.out.print("Enter Password> ");
@@ -105,17 +119,84 @@ public class RegistrationOperationModule {
             newPatientEntity.setAddress(scanner.nextLine().trim());
             
             patientEntitySessionBean.createPatientEntity(newPatientEntity);
-            System.out.println("Patient has been registered successfully!\n"); 
+            System.out.println("Registration is successful!\n"); 
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            System.out.println("Patient not registered!\n");
+            System.out.println("Registration is unsuccessful!\n");
+        }
+    }
+    
+    private void doLogin() throws InvalidLoginException {
+        Scanner scanner = new Scanner(System.in);
+        String username = "";
+        String password = "";
+        
+        System.out.println("*** Self-Service Kiosk :: Login ***\n");
+        System.out.print("Enter Identity Number> ");
+        username = scanner.nextLine().trim();
+        System.out.print("Enter Password> ");
+        password = scanner.nextLine().trim();
+        
+        if(username.length() > 0 && password.length() > 0) {
+            currentPatientEntity = patientEntitySessionBean.patientLogin(username, password);      
+        }
+        else {
+            throw new InvalidLoginException("Missing login credential!");
+        }
+    }
+    
+    private void menuMain() {
+        Scanner scanner = new Scanner(System.in);
+        Integer response = 0;
+        
+        while(true) {
+            System.out.println("*** Self-Service Kiosk :: Main ***\n");
+            System.out.println("You are logged in as " + currentPatientEntity.getFullName() + "\n");
+            System.out.println("1: Register Walk-In Consultation");
+            System.out.println("2: Register Consultation By Appointment");
+            System.out.println("3: View Appointments");
+            System.out.println("4: Add Appointment");
+            System.out.println("5: Cancel Appointment");
+            System.out.println("6: Logout\n");
+            
+            response = 0;
+            
+            while(response < 1 || response > 6) {
+                System.out.print("> ");
+
+                response = scanner.nextInt();
+
+                if (response == 1) {
+                    doRegisterWalkInConsultation();
+                }
+                else if (response == 2) {
+                    doRegisterConsultationByAppointment();
+                }
+                else if (response == 3) {
+                    
+                }
+                else if (response == 4) {
+                    
+                }
+                else if (response == 5) {
+                    
+                } else if (response == 6) {
+                    
+                } else {
+                    System.out.println("Invalid option, please try again!\n");
+                }
+            }
+            
+            if(response == 6) {
+                break;
+            }
         }
     }
     
     private void doRegisterWalkInConsultation() {
         try {
             Scanner scanner = new Scanner(System.in);
-            Timestamp currentTimestamp = new Timestamp(2020-1900,6,4,13,35,0,0);
+            Timestamp currentTimestamp = new Timestamp(2020-1900,6,5,13,35,0,0);
             
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
@@ -192,11 +273,8 @@ public class RegistrationOperationModule {
                 throw new InvalidInputException("Doctor ID inputted is not valid!");
             }
             
-            System.out.print("Enter Patient Identity Number> ");
-            String patientIdentityNumber = scanner.nextLine().trim();
-            
             DoctorEntity doctorEntity = doctorEntitySessionBean.retrieveDoctorEntityById(doctorId);
-            PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientIdentityNumber);
+            PatientEntity patientEntity = currentPatientEntity;
             //appointmentTimeStamp is initialized to a nonsense value first to prevent error
             Timestamp appointmentTimestamp = new Timestamp(0);
             boolean doctorIsFreeForWalkIn = false;
@@ -222,7 +300,7 @@ public class RegistrationOperationModule {
             }
             
             AppointmentEntity appointmentEntity = new AppointmentEntity(appointmentTimestamp);
-            Long appointmentId = appointmentEntitySessionBean.createAppointmentEntity(patientIdentityNumber, doctorId, appointmentEntity);
+            Long appointmentId = appointmentEntitySessionBean.createAppointmentEntity(currentPatientEntity.getIdentityNum(), doctorId, appointmentEntity);
             Long consultationId = consultationEntitySessionBean.createConsultationEntity(appointmentId, 30);
             
             String time = String.format("%02d", appointmentTimestamp.getHours()) + ":" + String.format("%02d", appointmentTimestamp.getMinutes());
@@ -240,9 +318,7 @@ public class RegistrationOperationModule {
             Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             
             System.out.println("*** CARS :: Registration Operation :: Register Consultation By Appointment ***\n");
-            System.out.print("Enter Patient Identity Number> ");
-            PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(scanner.nextLine().trim());
-            System.out.println();
+            PatientEntity patientEntity = currentPatientEntity;
 
             List<AppointmentEntity> allPatientAppointments = patientEntity.getAppointments();
             List<AppointmentEntity> appointments = new ArrayList<>();
@@ -375,7 +451,5 @@ public class RegistrationOperationModule {
             }
         }
     }
-    
-    
-    
+        
 }

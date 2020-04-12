@@ -5,17 +5,36 @@
  */
 package carsselfservicekiosk;
 
+import ejb.session.stateless.AppointmentEntitySessionBeanRemote;
+import ejb.session.stateless.ConsultationEntitySessionBeanRemote;
+import ejb.session.stateless.DoctorEntitySessionBeanRemote;
+import ejb.session.stateless.PatientEntitySessionBeanRemote;
+import ejb.session.stateless.StaffEntitySessionBeanRemote;
+import javax.ejb.EJB;
+
 /**
  *
  * @author Max
  */
 public class Main {
-
+    
+    @EJB
+    private static PatientEntitySessionBeanRemote patientEntitySessionBean;
+    @EJB
+    private static DoctorEntitySessionBeanRemote doctorEntitySessionBean;
+    @EJB
+    private static AppointmentEntitySessionBeanRemote appointmentEntitySessionBean;
+    @EJB
+    private static ConsultationEntitySessionBeanRemote consultationEntitySessionBean;
+    @EJB
+    private static StaffEntitySessionBeanRemote staffEntitySessionBean;
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        MainApp mainApp = new MainApp(patientEntitySessionBean, doctorEntitySessionBean, appointmentEntitySessionBean, consultationEntitySessionBean, staffEntitySessionBean);
+        mainApp.runApp();
     }
     
 }

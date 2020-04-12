@@ -385,9 +385,10 @@ public class AdministrationOperationsModule {
                              Date temp = datesAppliedForLeaves.get(i);
                              if(dayDiff(currentDate,temp)<7 ){
                                  canApply=false;
-                                 throw new IllegalArgumentException("You have to wait " + (7-dayDiff(currentDate,temp)) + " to apply for a leave" );
+                                 throw new IllegalArgumentException("Doctor will have to wait " + (7-dayDiff(currentDate,temp)) + " days to apply for a leave" );
                              }else{
                                  canApply = true;
+                                 break;
                              }
                          }
                          canApply=false;

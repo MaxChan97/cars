@@ -142,8 +142,17 @@ public class AppointmentOperationsModule {
             System.out.println();
 
             int year = Integer.valueOf(dateInput.substring(0, 4));
+    
             int month = Integer.valueOf(dateInput.substring(5, 7));
+            
+            if(month>12){
+                throw new InvalidInputException("Invalid month entered!");
+            }
+
             int date = Integer.valueOf(dateInput.substring(8, 10));
+            if(date>30){
+                throw new InvalidInputException("Date cannot be more than 30!");
+            }
 
             Date apptDate = new Date(year - 1900, month - 1, date);
             Date currDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
@@ -168,7 +177,12 @@ public class AppointmentOperationsModule {
             System.out.println();
 
             System.out.print("Enter Time> ");
+            
+           
             String timeInput = scanner.nextLine().trim();
+             if (timeInput.length() != 5) {
+                throw new InvalidInputException("Invalid time entered!");
+            }
             int hours = Integer.valueOf(timeInput.substring(0, 2));
             int min = Integer.valueOf(timeInput.substring(3, 5));
             Timestamp toAppoint = new Timestamp(year - 1900, month - 1, date, hours, min, 0, 0);

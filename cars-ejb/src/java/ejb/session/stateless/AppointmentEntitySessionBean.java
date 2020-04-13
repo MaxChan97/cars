@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.AppointmentEntity;
+import entity.ConsultationEntity;
 import entity.DoctorEntity;
 import entity.PatientEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -88,6 +89,18 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
     @Override
     public void deleteAppointmentEntity(Long id) throws AppointmentNotFoundException, SQLIntegrityConstraintViolationException {
         AppointmentEntity appointment = retrieveAppointmentEntityById(id);
+        ConsultationEntity ce = appointment.getConsultation();
+        if (ce != null) {
+            appointment.setConsultation(null);
+            em.remove(ce);
+        }
+        PatientEntity pe = appointment.getPatient();
+        pe.getAppointments().remove(appointment);
+        appointment.setPatient(null);
+        DoctorEntity de = appointment.getDoctor();
+        de.getAppointments().remove(appointment);
+        de.getNotAvail().remove(appointment.getAppointmentTimestamp());
+        appointment.setDoctor(null);
         em.remove(appointment);
     }
 }

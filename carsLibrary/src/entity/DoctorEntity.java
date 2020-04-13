@@ -45,13 +45,9 @@ public class DoctorEntity implements Serializable {
     private HashSet<Date> leaves;
     
     @Column(nullable = false)
-    private HashSet<Date> datesWithAppointments;
-    
-    @Column(nullable = false)
     private ArrayList<Date> datesAppliedForLeaves;
-
     
-    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE)
+    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE,orphanRemoval=true)
     private List<AppointmentEntity> appointments;
     
 
@@ -59,7 +55,6 @@ public class DoctorEntity implements Serializable {
         this.appointments = new ArrayList<AppointmentEntity>();
         this.notAvail = new HashSet<>();
         this.leaves = new HashSet<>();
-        this.datesWithAppointments = new HashSet<>();
         datesAppliedForLeaves =  new ArrayList<>();
     }
 
@@ -71,8 +66,6 @@ public class DoctorEntity implements Serializable {
         this.registration = registration;
         this.qualification = qualification;
     }
-    
-   
     
     public String getFullName(){
         return this.firstName + " " + this.lastName;
@@ -161,14 +154,6 @@ public class DoctorEntity implements Serializable {
     public void setAppointments(List<AppointmentEntity> appointments) {
         this.appointments = appointments;
     }
-    
-    public HashSet<Date> getDatesWithAppointments() {
-        return datesWithAppointments;
-    }
-
-    public void setDatesWithAppointments(HashSet<Date> dateWithAppointments) {
-        this.datesWithAppointments = dateWithAppointments;
-    }
 
     public ArrayList<Date> getDatesAppliedForLeaves() {
         return datesAppliedForLeaves;
@@ -177,8 +162,6 @@ public class DoctorEntity implements Serializable {
     public void setDatesAppliedForLeaves(ArrayList<Date> datesAppliedForLeaves) {
         this.datesAppliedForLeaves = datesAppliedForLeaves;
     }
-    
- 
 
     @Override
     public String toString() {

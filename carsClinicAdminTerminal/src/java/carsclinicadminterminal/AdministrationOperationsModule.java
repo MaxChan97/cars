@@ -8,6 +8,7 @@ package carsclinicadminterminal;
 import ejb.session.stateless.DoctorEntitySessionBeanRemote;
 import ejb.session.stateless.PatientEntitySessionBeanRemote;
 import ejb.session.stateless.StaffEntitySessionBeanRemote;
+import entity.AppointmentEntity;
 import entity.DoctorEntity;
 import entity.PatientEntity;
 import entity.StaffEntity;
@@ -16,6 +17,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -100,7 +102,7 @@ public class AdministrationOperationsModule {
                         newPatient.setIdentityNum(scanner.nextLine().trim());
 
                         System.out.print("Enter password> ");
-                        newPatient.setPassword(scanner.nextLine().trim());
+                        newPatient.setPassword(String.valueOf(Integer.valueOf(scanner.nextLine().trim())));
                         System.out.print("Enter First Name> ");
                         newPatient.setFirstName(scanner.nextLine().trim());
                         System.out.print("Enter Last Name> ");
@@ -115,13 +117,19 @@ public class AdministrationOperationsModule {
                         newPatient.setAddress(scanner.nextLine().trim());
 
                         patientEntitySessionBean.createPatientEntity(newPatient);
-                        System.out.println("New patient has been added successfully \n");
+                        System.out.println("New patient has been added successfully\n");
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
-
+                    } catch (NumberFormatException ex) {
+                        System.out.println("password must be numeric!");
+                        System.out.println("Patient not registered!\n");
+                        System.out.print("Press any key to continue...> ");
+                        scanner.nextLine();
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
                         System.out.println("Patient not added !\n");
+                        System.out.print("Press any key to continue...> ");
+                        scanner.nextLine();
                     }
 
                 } else if (response == 2) {
@@ -133,8 +141,8 @@ public class AdministrationOperationsModule {
                         String id1 = scanner.nextLine().trim();
                         System.out.println();
                         PatientEntity currPatient = patientEntitySessionBean.retrievePatientEntityByIdentityNum(id1);
-                        System.out.printf("%8s%20s%20s%20s%20s%20s%20s\n", "Patient ID", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
-                        System.out.printf("%8s%20s%20s%20s%20s%20s%20s\n", currPatient.getIdentityNum(), currPatient.getFirstName(), currPatient.getLastName(), currPatient.getGender(), currPatient.getAge().toString(), currPatient.getPhoneNumber(), currPatient.getAddress());
+                        System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Patient ID", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
+                        System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-30s\n", currPatient.getIdentityNum(), currPatient.getFirstName(), currPatient.getLastName(), currPatient.getGender(), currPatient.getAge().toString(), currPatient.getPhoneNumber(), currPatient.getAddress());
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
                     } catch (Exception ex) {
@@ -152,9 +160,9 @@ public class AdministrationOperationsModule {
                         PatientEntity updating = patientEntitySessionBean.retrievePatientEntityByIdentityNum(id);
                         PatientEntity toUpdate = new PatientEntity();
                         System.out.println("Updating patient with identity number of " + id);
-                        System.out.print("Enter Identity number> ");
+                        System.out.print("Enter Identity Number> ");
                         toUpdate.setIdentityNum(scanner.nextLine().trim());
-                        System.out.print("Enter password> ");
+                        System.out.print("Enter Password> ");
                         toUpdate.setPassword(scanner.nextLine().trim());
                         System.out.print("Enter First Name> ");
                         toUpdate.setFirstName(scanner.nextLine().trim());
@@ -184,7 +192,7 @@ public class AdministrationOperationsModule {
                 } else if (response == 4) {
                     System.out.println("*** CARS :: Administration Operation :: Patient Management ::  Delete Patient ***\n");
                     scanner.nextLine();
-                    System.out.println("Enter identity number of patient to delete> ");
+                    System.out.print("Enter identity number of patient to delete> ");
                     String id = scanner.nextLine().trim();
                     try {
                         patientEntitySessionBean.deletePatientEntity(id);
@@ -199,17 +207,18 @@ public class AdministrationOperationsModule {
                     }
                 } else if (response == 5) {
                     System.out.println("*** CARS :: Administration Operation :: Patient Management ::  View All Patient ***\n");
+                    scanner.nextLine();
                     List<PatientEntity> patients = patientEntitySessionBean.retrieveAllPatientEntities();
 
-                    System.out.printf("%8s%20s%20s%15s%15s%20s%20s\n", "Patient ID", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
+                    System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Patient ID", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
 
                     for (PatientEntity patient : patients) {
 
-                        System.out.printf("%8s%20s%20s%15s%15s%20s%20s\n", patient.getIdentityNum(), patient.getFirstName(), patient.getLastName(), patient.getGender(), patient.getAge().toString(), patient.getPhoneNumber(), patient.getAddress());
+                        System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-30s\n", patient.getIdentityNum(), patient.getFirstName(), patient.getLastName(), patient.getGender(), patient.getAge().toString(), patient.getPhoneNumber(), patient.getAddress());
                     }
+                    System.out.println();
 
                     System.out.print("Press any key to continue...> ");
-                    System.out.println();
                     scanner.nextLine();
 
                 } else if (response == 6) {
@@ -258,8 +267,10 @@ public class AdministrationOperationsModule {
                         newDoctor.setRegistration(scanner.nextLine().trim());
                         System.out.print("Enter Doctor's qualification> ");
                         newDoctor.setQualification(scanner.nextLine().trim());
-                        doctorEntitySessionBean.createDoctorEntity(newDoctor);
-                        System.out.println("Doctor successfully created");
+                        System.out.println();
+
+                        Long doctorId = doctorEntitySessionBean.createDoctorEntity(newDoctor);
+                        System.out.println("Doctor with ID number " + doctorId + " successfully created");
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
 
@@ -280,9 +291,11 @@ public class AdministrationOperationsModule {
                         DoctorEntity doctor = doctorEntitySessionBean.retrieveDoctorEntityById(id);
                         System.out.printf("%8s%20s%20s%20s%20s\n", "Doctor ID", "First Name", "Last Name", "Registration", "Qualification");
                         System.out.printf("%8s%20s%20s%20s%20s\n", doctor.getDoctorId().toString(), doctor.getFirstName(), doctor.getLastName(), doctor.getRegistration(), doctor.getQualification());
-                        System.out.println("Press any key to continue...> ");
+                        System.out.println();
+                        System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
                     } catch (Exception ex) {
+                        System.out.println();
                         System.err.println(ex.getMessage());
                         System.out.println("Please key in the correct doctor id!");
                         System.out.print("Press any key to continue...> ");
@@ -302,19 +315,22 @@ public class AdministrationOperationsModule {
 
                         System.out.print("Enter updated Doctor's first name> ");
                         updated.setFirstName(scanner.nextLine().trim());
-                        System.out.println("Enter updated Doctor's last name> ");
+                        System.out.print("Enter updated Doctor's last name> ");
                         updated.setLastName(scanner.nextLine().trim());
                         System.out.print("Enter updated Doctor's registration number> ");
                         updated.setRegistration(scanner.nextLine().trim());
                         System.out.print("Enter updated Doctor's qualification> ");
                         updated.setQualification(scanner.nextLine().trim());
                         doctorEntitySessionBean.updateDoctorEntity(updated);
+                        System.out.println();
+
                         System.out.println("Doctor successfully updated");
 
-                        System.out.println("Press any key to continue...> ");
+                        System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
 
                     } catch (Exception ex) {
+                        System.out.println();
                         System.err.println(ex.getMessage());
                         System.out.println("Unable to update doctor!");
                         System.out.print("Press any key to continue...> ");
@@ -324,11 +340,11 @@ public class AdministrationOperationsModule {
                 } else if (response == 4) {
                     System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  Delete Doctor ***\n");
                     scanner.nextLine();
-                    System.out.println("Enter identity number of doctor to delete> ");
-                    Long id = scanner.nextLong();
-                    scanner.nextLine();
+                    System.out.print("Enter identity number of doctor to delete> ");
+                    Long id = Long.valueOf(scanner.nextLine().trim());
                     try {
                         doctorEntitySessionBean.deleteDoctorEntity(id);
+                        System.out.println();
                         System.out.println("Doctor successfully deleted");
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
@@ -342,40 +358,47 @@ public class AdministrationOperationsModule {
                     System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  View All Doctor ***\n");
                     scanner.nextLine();
 
-                    System.out.printf("%8s%20s%20s%20s%20s\n", "Doctor ID", "First Name", "Last Name", "Registration", "Qualification");
+                    System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Doctor ID", "First Name", "Last Name", "Registration", "Qualification");
                     List<DoctorEntity> doctors = doctorEntitySessionBean.retrieveAllDoctorEntities();
                     for (DoctorEntity pe : doctors) {
-                        System.out.printf("%8s%20s%20s%20s%20s\n", pe.getDoctorId().toString(), pe.getFirstName(), pe.getLastName(), pe.getRegistration(), pe.getQualification());
+                        System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", pe.getDoctorId().toString(), pe.getFirstName(), pe.getLastName(), pe.getRegistration(), pe.getQualification());
                     }
-                    System.out.println("Press any key to continue...> ");
+                    System.out.println();
+
+                    System.out.print("Press any key to continue...> ");
                     scanner.nextLine();
                 } else if (response == 6) {
                     System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  Leave Management ***\n");
                     scanner.nextLine();
                     System.out.print("Enter doctor id> ");
-                    Long idLeave = scanner.nextLong();
-                    scanner.nextLine();
+                    Long idLeave = Long.valueOf(scanner.nextLine().trim());
 
-                    System.out.println("Enter date that doctor " + idLeave + " wishes to apply for leaves in the following format YYYY MM DD>");
+                    System.out.print("Enter date that doctor " + idLeave + " wishes to apply for leaves in the following format YYYY-MM-DD> ");
 
-                    int year = scanner.nextInt() - 1900;
-                    int month = scanner.nextInt() - 1;
-                    int date = scanner.nextInt();
+                    String dateInput = scanner.nextLine().trim();
+
+                    int year = Integer.valueOf(dateInput.substring(0, 4));
+                    int month = Integer.valueOf(dateInput.substring(5, 7));
+                    int date = Integer.valueOf(dateInput.substring(8, 10));
 
                     try {
                         DoctorEntity doctorToUpdateLeave = doctorEntitySessionBean.retrieveDoctorEntityById(idLeave);
                         boolean canApply;
                         ArrayList<Date> datesAppliedForLeaves = doctorToUpdateLeave.getDatesAppliedForLeaves();
-                        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+                        //To change
+                        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
 
                         Date currentDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
                         //Date currentDate = new Date(currentTimestamp.getYear()-1900,currentTimestamp.getMonth()-1,currentTimestamp.getDate());
-                        Date dateToApplyLeave = new Date(year, month, date);
+                        Date dateToApplyLeave = new Date(year - 1900, month - 1, date);
                         Long dayDifference = (dateToApplyLeave.getTime() - currentDate.getTime()) / (24 * 60 * 60 * 1000);
+
+                        if (dateToApplyLeave.getDay() == 0 || dateToApplyLeave.getDay() == 6) {
+                            throw new InvalidInputException("Clinic not open on given date!");
+                        }
 
                         if (datesAppliedForLeaves.isEmpty()) {//never apply for any leaves
                             canApply = true;
-
                         } else {
                             for (int i = 0; i < datesAppliedForLeaves.size(); i++) {
                                 Date temp = datesAppliedForLeaves.get(i);
@@ -388,39 +411,41 @@ public class AdministrationOperationsModule {
                                 }
                             }
                             canApply = false;
-
                         }
+
                         //constraints
                         // one leave a week and  1 week in advance
                         // if doctor has apointments on that day,he cannot apply for leave
-                        if (dayDifference < 0) {
+                        if (dayDifference <= 0) {
                             throw new IllegalArgumentException("Invalid date entered! Given date has already passed!");
-                        }
-                        if (dayDifference < 7) {
+                        } else if (dayDifference < 7) {
                             throw new IllegalArgumentException("Leave is less than a week from today. Doctor cannot apply for leave on given date " + dateToApplyLeave);
                         } else {
-
-                            if (doctorToUpdateLeave.getDatesWithAppointments().contains(dateToApplyLeave)) {
+                            if (doctorHasAppointmentOnLeaveDate(doctorToUpdateLeave, dateToApplyLeave)) {
                                 throw new IllegalArgumentException("Doctor have appointment on given date!");
                             } else if (doctorToUpdateLeave.getLeaves().contains(dateToApplyLeave)) {
                                 throw new IllegalArgumentException("Already applied for leave on the given date ");
                             } else if (canApply) {
                                 doctorToUpdateLeave.getLeaves().add(dateToApplyLeave);
                                 doctorToUpdateLeave.getDatesAppliedForLeaves().add(currentDate);
+                                doctorEntitySessionBean.updateDoctorEntity(doctorToUpdateLeave);
                                 System.out.println("Leave successfully applied on " + dateToApplyLeave + " on " + currentDate);
-
-                                canApply = false;
+                                System.out.println();
+                                System.out.print("Press any key to continue...> ");
+                                scanner.nextLine();
                             } else {
-                                System.out.println("Could not apply for leave on given date");
+                                throw new InvalidInputException("Leave dates has to be at least one week apart!");
                             }
                         }
-
-                        doctorEntitySessionBean.updateDoctorEntity(doctorToUpdateLeave);
-                        //System.out.println("Leave successfully updated");
-
+                     }catch (NumberFormatException ex) {
+                            System.out.println("Invalid date/time inputted!");
+                            System.out.print("Press any key to continue...> ");
+                            scanner.nextLine();
                     } catch (Exception ex) {
-                        System.err.println(ex.getMessage());
-
+                        System.out.println("Leave not applied!");
+                        System.out.println(ex.getMessage());
+                        System.out.print("Press any key to continue...> ");
+                        scanner.nextLine();
                     }
 
                 } else if (response == 7) {
@@ -456,10 +481,6 @@ public class AdministrationOperationsModule {
                     scanner.nextLine();
                     StaffEntity newStaff = new StaffEntity();
                     try {
-
-                        System.out.print("Enter Staff id> ");
-                        //Integer.valueOf(scanner.nextLine().trim())
-                        newStaff.setStaffId(Long.valueOf(scanner.nextLine()));
                         System.out.print("Enter Staff's first name> ");
                         newStaff.setFirstName(scanner.nextLine().trim());
                         System.out.print("Enter Staff's last name> ");
@@ -470,11 +491,12 @@ public class AdministrationOperationsModule {
                         newStaff.setPassword(scanner.nextLine().trim());
                         staffEntitySessionBean.createStaffEntity(newStaff);
                         System.out.println("Staff successfully created");
+                        System.out.println();
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
                     } catch (Exception ex) {
                         System.err.println(ex.getMessage());
-                        System.out.println("Could not register staff, please key in the corret input!");
+                        System.out.println("Could not register staff, please key in the correct input!");
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
                     }
@@ -482,13 +504,14 @@ public class AdministrationOperationsModule {
                 } else if (response == 2) {
                     System.out.println("*** CARS :: Administration Operation :: Staff Management ::  View Staff Details ***\n");
                     scanner.nextLine();
-                    System.out.print("Enter staff id to view details> ");
-                    Long id3 = scanner.nextLong();
-                    scanner.nextLine();
+                    System.out.print("Enter staff username to view details> ");
+                    String id3 = scanner.nextLine().trim();
                     try {
-                        StaffEntity staff = staffEntitySessionBean.retrieveStaffEntityById(id3);
-                        System.out.printf("%8s%20s%20s\n", "Staff ID", "First Name", "Last Name");
-                        System.out.printf("%8s%20s%20s\n", staff.getStaffId().toString(), staff.getFirstName(), staff.getLastName());
+                        StaffEntity staff = staffEntitySessionBean.retrieveStaffEntityByUsername(id3);
+                        System.out.printf("%-20s%-20s%-20s%-20s\n", "Staff ID", "First Name", "Last Name", "Username");
+                        System.out.printf("%-20s%-20s%-20s%-20s\n", staff.getStaffId().toString(), staff.getFirstName(), staff.getLastName(), staff.getUserName());
+                        System.out.println();
+
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
                     } catch (Exception ex) {
@@ -500,11 +523,11 @@ public class AdministrationOperationsModule {
                 } else if (response == 3) {
                     System.out.println("*** CARS :: Administration Operation :: Staff Management :: Update Staff ***\n");
                     scanner.nextLine();
-                    System.out.print("Enter id of staff to update> ");
-                    Long id = scanner.nextLong();
-                    scanner.nextLine();
+                    System.out.print("Enter Username of staff to update> ");
+                    String id = scanner.nextLine().trim();
+
                     try {
-                        StaffEntity toUpdate = staffEntitySessionBean.retrieveStaffEntityById(id);
+                        StaffEntity toUpdate = staffEntitySessionBean.retrieveStaffEntityByUsername(id);
                         StaffEntity updated = new StaffEntity();
 
                         updated.setStaffId(toUpdate.getStaffId());
@@ -518,6 +541,8 @@ public class AdministrationOperationsModule {
                         System.out.print("Enter updated Staff password> ");
                         updated.setPassword(scanner.nextLine().trim());
                         staffEntitySessionBean.updateStaffEntity(updated);
+                        System.out.println();
+
                         System.out.println("Staff successfully updated");
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
@@ -532,12 +557,14 @@ public class AdministrationOperationsModule {
                 } else if (response == 4) {
                     System.out.println("*** CARS :: Administration Operation :: Staff Management ::  Delete Staff ***\n");
                     scanner.nextLine();
-                    System.out.println("Enter id of staff to delete> ");
-                    Long id = scanner.nextLong();
-                    scanner.nextLine();
+                    System.out.print("Enter Username of staff to delete> ");
+                    String id = scanner.nextLine().trim();
+
                     try {
-                        staffEntitySessionBean.deleteStaffEntity(id);
+                        staffEntitySessionBean.deleteStaffEntity(staffEntitySessionBean.retrieveStaffEntityByUsername(id).getStaffId());
                         System.out.println("Staff successfully deleted");
+                        System.out.println();
+
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
 
@@ -550,13 +577,16 @@ public class AdministrationOperationsModule {
                     }
                 } else if (response == 5) {
                     System.out.println("*** CARS :: Administration Operation :: Staff Management ::  View All Staff ***\n");
+                    scanner.nextLine();
                     List<StaffEntity> staffs = staffEntitySessionBean.retrieveAllStaffEntities();
-                    System.out.printf("%8s%20s%20s\n", "Staff ID", "First Name", "Last Name");
+                    System.out.printf("%-20s%-20s%-20s%-20s\n", "Staff ID", "First Name", "Last Name", "Username");
 
                     for (StaffEntity se : staffs) {
-                        System.out.printf("%8s%20s%20s\n", se.getStaffId().toString(), se.getFirstName(), se.getLastName());
+                        System.out.printf("%-20s%-20s%-20s%-20s\n", se.getStaffId().toString(), se.getFirstName(), se.getLastName(), se.getUserName());
                     }
-                    System.out.println("Press any key to continue...> ");
+                    System.out.println();
+
+                    System.out.print("Press any key to continue...> ");
                     scanner.nextLine();
                 } else if (response == 6) {
                     break;
@@ -571,7 +601,19 @@ public class AdministrationOperationsModule {
 
     }
 
-    public Long dayDiff(Date d1, Date d2) {
+    private boolean doctorHasAppointmentOnLeaveDate(DoctorEntity doctor, Date date) {
+        List<AppointmentEntity> appointmentEntities = doctor.getAppointments();
+        for (AppointmentEntity ae : appointmentEntities) {
+            if (date.getYear() == ae.getAppointmentTimestamp().getYear()
+                    && date.getMonth() == ae.getAppointmentTimestamp().getMonth()
+                    && date.getDate() == ae.getAppointmentTimestamp().getDate()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Long dayDiff(Date d1, Date d2) {
         return (d1.getTime() - d2.getTime()) / (24 * 60 * 60 * 1000);
     }
 }

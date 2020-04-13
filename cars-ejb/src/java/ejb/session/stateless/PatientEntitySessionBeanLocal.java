@@ -9,6 +9,7 @@ import entity.AppointmentEntity;
 import entity.PatientEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import util.exception.AppointmentNotFoundException;
 import util.exception.InvalidInputException;
 import util.exception.InvalidLoginException;
 import util.exception.PatientNotFoundException;
@@ -29,5 +30,5 @@ public interface PatientEntitySessionBeanLocal {
 
     public void updatePatientEntity(PatientEntity patientEntity) throws PatientNotFoundException, InvalidInputException;
 
-    public void deletePatientEntity(String id) throws PatientNotFoundException, SQLIntegrityConstraintViolationException;
+    public void deletePatientEntity(String id) throws PatientNotFoundException, SQLIntegrityConstraintViolationException, AppointmentNotFoundException;
 }

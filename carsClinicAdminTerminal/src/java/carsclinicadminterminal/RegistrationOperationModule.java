@@ -29,7 +29,7 @@ import util.exception.NoAvailableDoctorsException;
  * @author Max
  */
 public class RegistrationOperationModule {
-    
+
     private PatientEntitySessionBeanRemote patientEntitySessionBean;
     private DoctorEntitySessionBeanRemote doctorEntitySessionBean;
     private AppointmentEntitySessionBeanRemote appointmentEntitySessionBean;
@@ -82,15 +82,15 @@ public class RegistrationOperationModule {
     }
 
     private void doRegisterNewPatient() {
+        Scanner scanner = new Scanner(System.in);
         try {
-            Scanner scanner = new Scanner(System.in);
             PatientEntity newPatientEntity = new PatientEntity();
 
             System.out.println("*** CARS :: Registration Operation :: Register New Patient ***\n");
             System.out.print("Enter Identity Number> ");
             newPatientEntity.setIdentityNum(scanner.nextLine().trim());
             System.out.print("Enter Password> ");
-            newPatientEntity.setPassword(scanner.nextLine().trim());
+            newPatientEntity.setPassword(String.valueOf(Integer.valueOf(scanner.nextLine().trim())));
             System.out.print("Enter First Name> ");
             newPatientEntity.setFirstName(scanner.nextLine().trim());
             System.out.print("Enter Last Name> ");
@@ -103,20 +103,27 @@ public class RegistrationOperationModule {
             newPatientEntity.setPhoneNumber(scanner.nextLine().trim());
             System.out.print("Enter Address> ");
             newPatientEntity.setAddress(scanner.nextLine().trim());
-            
+
             patientEntitySessionBean.createPatientEntity(newPatientEntity);
-            System.out.println("Patient has been registered successfully!\n"); 
+            System.out.println("Patient has been registered successfully!\n");
+        } catch (NumberFormatException ex) {
+            System.out.println("password must be numeric!");
+            System.out.println("Patient not registered!\n");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             System.out.println("Patient not registered!\n");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
     }
-    
+
     private void doRegisterWalkInConsultation() {
         try {
             Scanner scanner = new Scanner(System.in);
-            Timestamp currentTimestamp = new Timestamp(2020-1900,6,4,13,35,0,0);
-            
+            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
             for (DoctorEntity de : doctorEntities) {
@@ -124,7 +131,7 @@ public class RegistrationOperationModule {
                     availableDoctors.add(de);
                 }
             }
-            
+
             List<Time> allTimeSlots = getAllTimeSlots();
             Time lowerBound = new Time(currentTimestamp.getHours(), currentTimestamp.getMinutes(), currentTimestamp.getSeconds());
             Time upperBound = new Time(currentTimestamp.getHours() + 3, currentTimestamp.getMinutes(), currentTimestamp.getSeconds());
@@ -135,7 +142,7 @@ public class RegistrationOperationModule {
                     availableForWalkIn.add(timeSlot);
                 }
             }
-            
+
             System.out.println("*** CARS :: Registration Operation :: Register Walk-In Consultation ***\n");
             System.out.println("Doctor:");
             System.out.println("Id |Name");
@@ -149,11 +156,11 @@ public class RegistrationOperationModule {
                 }
             }
             System.out.println();
-            
+
             System.out.println("Availability:");
             System.out.print("Time  |");
             for (DoctorEntity de : availableDoctors) {
-                if ( de.getDoctorId() >= 10) {
+                if (de.getDoctorId() >= 10) {
                     System.out.print(de.getDoctorId() + "|");
                 } else {
                     System.out.print(de.getDoctorId() + " |");
@@ -164,8 +171,8 @@ public class RegistrationOperationModule {
             for (Time timeSlot : availableForWalkIn) {
                 System.out.print(String.valueOf(timeSlot).substring(0, 5) + " |");
                 for (DoctorEntity de : availableDoctors) {
-                    if (de.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(), 
-                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
+                    if (de.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(),
+                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(),
                             timeSlot.getMinutes(), timeSlot.getSeconds(), 0))) {
                         System.out.print("X |");
                     } else {
@@ -179,7 +186,7 @@ public class RegistrationOperationModule {
             if (atLeastOneAvailableSlot == false) {
                 throw new NoAvailableDoctorsException("No doctor is available for walk-in consultation!");
             }
-            
+
             System.out.print("Enter Doctor Id> ");
             Long doctorId = Long.valueOf(scanner.nextLine().trim());
             boolean noneMatch = false;
@@ -191,40 +198,40 @@ public class RegistrationOperationModule {
             if (noneMatch == false) {
                 throw new InvalidInputException("Doctor ID inputted is not valid!");
             }
-            
+
             System.out.print("Enter Patient Identity Number> ");
             String patientIdentityNumber = scanner.nextLine().trim();
-            
+
             DoctorEntity doctorEntity = doctorEntitySessionBean.retrieveDoctorEntityById(doctorId);
             PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientIdentityNumber);
             //appointmentTimeStamp is initialized to a nonsense value first to prevent error
             Timestamp appointmentTimestamp = new Timestamp(0);
             boolean doctorIsFreeForWalkIn = false;
             for (Time timeSlot : availableForWalkIn) {
-                if (!doctorEntity.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(), 
-                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
-                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0)) && doctorIsFreeForWalkIn == false) {
-                    appointmentTimestamp = new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(), 
-                            timeSlot.getHours(), timeSlot.getMinutes(), timeSlot.getSeconds(), 0); 
+                if (!doctorEntity.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(),
+                        currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(),
+                        timeSlot.getMinutes(), timeSlot.getSeconds(), 0)) && doctorIsFreeForWalkIn == false) {
+                    appointmentTimestamp = new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(),
+                            timeSlot.getHours(), timeSlot.getMinutes(), timeSlot.getSeconds(), 0);
                     doctorIsFreeForWalkIn = true;
-                } else if (!doctorEntity.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(), 
-                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
-                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0)) && doctorIsFreeForWalkIn == true
-                            && appointmentTimestamp.after(new Timestamp(currentTimestamp.getYear(), 
-                            currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(), 
-                            timeSlot.getMinutes(), timeSlot.getSeconds(), 0))) {
-                    appointmentTimestamp = new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(), 
+                } else if (!doctorEntity.getNotAvail().contains(new Timestamp(currentTimestamp.getYear(),
+                        currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(),
+                        timeSlot.getMinutes(), timeSlot.getSeconds(), 0)) && doctorIsFreeForWalkIn == true
+                        && appointmentTimestamp.after(new Timestamp(currentTimestamp.getYear(),
+                                currentTimestamp.getMonth(), currentTimestamp.getDate(), timeSlot.getHours(),
+                                timeSlot.getMinutes(), timeSlot.getSeconds(), 0))) {
+                    appointmentTimestamp = new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(),
                             timeSlot.getHours(), timeSlot.getMinutes(), timeSlot.getSeconds(), 0);
                 }
             }
             if (doctorIsFreeForWalkIn == false) {
                 throw new DoctorNotAvailableForWalkInException("Doctor chosen is not available for walk-in consultation");
             }
-            
+
             AppointmentEntity appointmentEntity = new AppointmentEntity(appointmentTimestamp);
             Long appointmentId = appointmentEntitySessionBean.createAppointmentEntity(patientIdentityNumber, doctorId, appointmentEntity);
             Long consultationId = consultationEntitySessionBean.createConsultationEntity(appointmentId, 30);
-            
+
             String time = String.format("%02d", appointmentTimestamp.getHours()) + ":" + String.format("%02d", appointmentTimestamp.getMinutes());
             System.out.println(patientEntity.getFullName() + " appointment with Dr. " + doctorEntity.getFullName() + " has been booked at " + time + ".");
             System.out.println("Queue Number is : " + consultationEntitySessionBean.retrieveConsultationEntityById(consultationId).getQueueNumber());
@@ -233,12 +240,12 @@ public class RegistrationOperationModule {
             System.out.println("Consultation not registered");
         }
     }
-    
+
     private void doRegisterConsultationByAppointment() {
         try {
             Scanner scanner = new Scanner(System.in);
-            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-            
+            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+
             System.out.println("*** CARS :: Registration Operation :: Register Consultation By Appointment ***\n");
             System.out.print("Enter Patient Identity Number> ");
             PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(scanner.nextLine().trim());
@@ -247,13 +254,13 @@ public class RegistrationOperationModule {
             List<AppointmentEntity> allPatientAppointments = patientEntity.getAppointments();
             List<AppointmentEntity> appointments = new ArrayList<>();
             for (AppointmentEntity ae : allPatientAppointments) {
-                if (sameDay(ae.getAppointmentTimestamp(), currentTimestamp) 
+                if (sameDay(ae.getAppointmentTimestamp(), currentTimestamp)
                         && (ae.getAppointmentTimestamp().after(currentTimestamp) || ae.getAppointmentTimestamp().equals(currentTimestamp))
                         && ae.getConsultation() == null) {
                     appointments.add(ae);
                 }
             }
-            
+
             System.out.println("Appointments:");
             System.out.println("Id |Date       |Time  |Doctor");
             HashSet<Long> appointmentIds = new HashSet<>();
@@ -262,23 +269,24 @@ public class RegistrationOperationModule {
                 String date = String.valueOf(ae.getAppointmentTimestamp().getYear() + 1900) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getMonth()) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getDay());
                 String time = String.format("%02d", ae.getAppointmentTimestamp().getHours()) + ":" + String.format("%02d", ae.getAppointmentTimestamp().getMinutes());
                 if (ae.getAppointmentId() < 100) {
-                    System.out.println(String.format("%02d",ae.getAppointmentId()) + " |" + date + " |" + time + " |" + ae.getDoctor().getFullName());
+                    System.out.println(String.format("%02d", ae.getAppointmentId()) + " |" + date + " |" + time + " |" + ae.getDoctor().getFullName());
                 } else {
-                    System.out.println(String.format("%02d",ae.getAppointmentId()) + "|" + date + " |" + time + " |" + ae.getDoctor().getFullName());
+                    System.out.println(String.format("%02d", ae.getAppointmentId()) + "|" + date + " |" + time + " |" + ae.getDoctor().getFullName());
                 }
             }
             System.out.println();
-            
+
             System.out.print("Enter Appointment Id> ");
             Long appointmentId = Long.valueOf(scanner.nextLine().trim());
+            System.out.println();
             if (!appointmentIds.contains(appointmentId)) {
                 throw new InvalidInputException("Appointment ID entered is not valid!");
             }
-            
+
             AppointmentEntity appointmentEntity = appointmentEntitySessionBean.retrieveAppointmentEntityById(appointmentId);
             DoctorEntity doctorEntity = appointmentEntity.getDoctor();
             Long consultationId = consultationEntitySessionBean.createConsultationEntity(appointmentId, 30);
-            
+
             String time = String.format("%02d", appointmentEntity.getAppointmentTimestamp().getHours()) + ":" + String.format("%02d", appointmentEntity.getAppointmentTimestamp().getMinutes());
             System.out.println(patientEntity.getFullName() + " appointment with Dr. " + doctorEntity.getFullName() + " has been booked at " + time + ".");
             System.out.println("Queue Number is : " + consultationEntitySessionBean.retrieveConsultationEntityById(consultationId).getQueueNumber());
@@ -287,73 +295,73 @@ public class RegistrationOperationModule {
             System.out.println("Consultation not registered");
         }
     }
-    
+
     private boolean sameDay(Timestamp left, Timestamp right) {
         if (left.getYear() == right.getYear() && left.getMonth() == right.getMonth() && left.getDate() == right.getDate()) {
-            return true; 
+            return true;
         } else {
             return false;
         }
     }
-    
+
     private List<Time> getAllTimeSlots() {
         List<Time> allTimeSlots = new ArrayList<>();
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
         if (currentTimestamp.getDay() == 1 || currentTimestamp.getDay() == 2 || currentTimestamp.getDay() == 3) {
-            allTimeSlots.add(new Time(8,30,0));
-            allTimeSlots.add(new Time(9,0,0));
-            allTimeSlots.add(new Time(9,30,0));
-            allTimeSlots.add(new Time(10,0,0));
-            allTimeSlots.add(new Time(10,30,0));
-            allTimeSlots.add(new Time(11,0,0));
-            allTimeSlots.add(new Time(11,30,0));
-            allTimeSlots.add(new Time(12,0,0));
-            allTimeSlots.add(new Time(13,30,0));
-            allTimeSlots.add(new Time(14,0,0));
-            allTimeSlots.add(new Time(14,30,0));
-            allTimeSlots.add(new Time(15,0,0));
-            allTimeSlots.add(new Time(15,30,0));
-            allTimeSlots.add(new Time(16,0,0));
-            allTimeSlots.add(new Time(16,30,0));
-            allTimeSlots.add(new Time(17,0,0));
-            allTimeSlots.add(new Time(17,30,0));
+            allTimeSlots.add(new Time(8, 30, 0));
+            allTimeSlots.add(new Time(9, 0, 0));
+            allTimeSlots.add(new Time(9, 30, 0));
+            allTimeSlots.add(new Time(10, 0, 0));
+            allTimeSlots.add(new Time(10, 30, 0));
+            allTimeSlots.add(new Time(11, 0, 0));
+            allTimeSlots.add(new Time(11, 30, 0));
+            allTimeSlots.add(new Time(12, 0, 0));
+            allTimeSlots.add(new Time(13, 30, 0));
+            allTimeSlots.add(new Time(14, 0, 0));
+            allTimeSlots.add(new Time(14, 30, 0));
+            allTimeSlots.add(new Time(15, 0, 0));
+            allTimeSlots.add(new Time(15, 30, 0));
+            allTimeSlots.add(new Time(16, 0, 0));
+            allTimeSlots.add(new Time(16, 30, 0));
+            allTimeSlots.add(new Time(17, 0, 0));
+            allTimeSlots.add(new Time(17, 30, 0));
         } else if (currentTimestamp.getDay() == 4) {
-            allTimeSlots.add(new Time(8,30,0));
-            allTimeSlots.add(new Time(9,0,0));
-            allTimeSlots.add(new Time(9,30,0));
-            allTimeSlots.add(new Time(10,0,0));
-            allTimeSlots.add(new Time(10,30,0));
-            allTimeSlots.add(new Time(11,0,0));
-            allTimeSlots.add(new Time(11,30,0));
-            allTimeSlots.add(new Time(12,0,0));
-            allTimeSlots.add(new Time(13,30,0));
-            allTimeSlots.add(new Time(14,0,0));
-            allTimeSlots.add(new Time(14,30,0));
-            allTimeSlots.add(new Time(15,0,0));
-            allTimeSlots.add(new Time(15,30,0));
-            allTimeSlots.add(new Time(16,0,0));
-            allTimeSlots.add(new Time(16,30,0));
+            allTimeSlots.add(new Time(8, 30, 0));
+            allTimeSlots.add(new Time(9, 0, 0));
+            allTimeSlots.add(new Time(9, 30, 0));
+            allTimeSlots.add(new Time(10, 0, 0));
+            allTimeSlots.add(new Time(10, 30, 0));
+            allTimeSlots.add(new Time(11, 0, 0));
+            allTimeSlots.add(new Time(11, 30, 0));
+            allTimeSlots.add(new Time(12, 0, 0));
+            allTimeSlots.add(new Time(13, 30, 0));
+            allTimeSlots.add(new Time(14, 0, 0));
+            allTimeSlots.add(new Time(14, 30, 0));
+            allTimeSlots.add(new Time(15, 0, 0));
+            allTimeSlots.add(new Time(15, 30, 0));
+            allTimeSlots.add(new Time(16, 0, 0));
+            allTimeSlots.add(new Time(16, 30, 0));
         } else if (currentTimestamp.getDay() == 5) {
-            allTimeSlots.add(new Time(8,30,0));
-            allTimeSlots.add(new Time(9,0,0));
-            allTimeSlots.add(new Time(9,30,0));
-            allTimeSlots.add(new Time(10,0,0));
-            allTimeSlots.add(new Time(10,30,0));
-            allTimeSlots.add(new Time(11,0,0));
-            allTimeSlots.add(new Time(11,30,0));
-            allTimeSlots.add(new Time(12,0,0));
-            allTimeSlots.add(new Time(13,30,0));
-            allTimeSlots.add(new Time(14,0,0));
-            allTimeSlots.add(new Time(14,30,0));
-            allTimeSlots.add(new Time(15,0,0));
-            allTimeSlots.add(new Time(15,30,0));
-            allTimeSlots.add(new Time(16,0,0));
-            allTimeSlots.add(new Time(16,30,0));
-            allTimeSlots.add(new Time(17,0,0));
+            allTimeSlots.add(new Time(8, 30, 0));
+            allTimeSlots.add(new Time(9, 0, 0));
+            allTimeSlots.add(new Time(9, 30, 0));
+            allTimeSlots.add(new Time(10, 0, 0));
+            allTimeSlots.add(new Time(10, 30, 0));
+            allTimeSlots.add(new Time(11, 0, 0));
+            allTimeSlots.add(new Time(11, 30, 0));
+            allTimeSlots.add(new Time(12, 0, 0));
+            allTimeSlots.add(new Time(13, 30, 0));
+            allTimeSlots.add(new Time(14, 0, 0));
+            allTimeSlots.add(new Time(14, 30, 0));
+            allTimeSlots.add(new Time(15, 0, 0));
+            allTimeSlots.add(new Time(15, 30, 0));
+            allTimeSlots.add(new Time(16, 0, 0));
+            allTimeSlots.add(new Time(16, 30, 0));
+            allTimeSlots.add(new Time(17, 0, 0));
         }
         return allTimeSlots;
     }
-    
+
     private int compareTime(Time left, Time right) {
         if (left.getHours() < right.getHours()) {
             return -1;
@@ -375,7 +383,5 @@ public class RegistrationOperationModule {
             }
         }
     }
-    
-    
-    
+
 }

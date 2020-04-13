@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.AppointmentEntity;
+import entity.ConsultationEntity;
 import entity.DoctorEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
@@ -50,6 +51,7 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
     @Override
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException {
         DoctorEntity entity = em.find(DoctorEntity.class, id);
+        entity.getAppointments().size();
         
         if (entity != null) {
             return entity;
@@ -69,7 +71,6 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
         de.setNotAvail(doctorEntity.getNotAvail());
         de.setQualification(doctorEntity.getQualification());
         de.setRegistration(doctorEntity.getRegistration());
-        de.setDatesWithAppointments(doctorEntity.getDatesWithAppointments());
         de.setDatesAppliedForLeaves(doctorEntity.getDatesAppliedForLeaves());
     }
 
@@ -79,9 +80,15 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
         
         List<AppointmentEntity> appointmentEntities = toDelete.getAppointments();
         for (AppointmentEntity ae : appointmentEntities) {
+            if (ae.getConsultation() != null) {
+                ConsultationEntity ce = ae.getConsultation();
+                ae.setConsultation(null);
+                ce.setAppointment(null);
+                em.remove(ce);
+            }
             ae.setDoctor(null);
+            em.remove(ae);
         }
-        
         em.remove(toDelete);
     }
 }

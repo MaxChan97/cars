@@ -27,15 +27,14 @@ public class PatientEntity implements Serializable {
     @Id
     private String identityNum;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 6)
     private String password;
     @Column(length = 255)
     private String firstName;
     @Column(length = 255)
     private String lastName;
-
-    //@Enumerated(EnumType.STRING)
-    private String gender; // wanna use enum?
+    @Column(nullable = false)
+    private String gender; 
     @Column(nullable = false)
     private Integer age;
     @Column(nullable = false)
@@ -95,7 +94,10 @@ public class PatientEntity implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws InvalidInputException {
+        if (password.length() != 6) {
+            throw new InvalidInputException("Password must be 6 digits long!");
+        }
         this.password = password;
     }
 

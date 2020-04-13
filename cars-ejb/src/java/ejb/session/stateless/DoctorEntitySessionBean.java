@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.DoctorNotFoundException;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -61,7 +62,7 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
     }
 
     @Override
-    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException {
+    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException, InvalidInputException {
         DoctorEntity de = retrieveDoctorEntityById(doctorEntity.getDoctorId());
         
         de.setFirstName(doctorEntity.getFirstName());

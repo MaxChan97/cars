@@ -5,10 +5,12 @@
         <data xmlns="http://www.netbeans.org/ns/j2ee-ejbjarproject/3">
             <name>cars-ejb</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
+            <included-library dirs="200">reference.carsLibrary.jar</included-library>
             <included-library dirs="200">file.reference.javaee-api-7.0.jar</included-library>
             <included-library dirs="200">file.reference.javaee-endorsed-api-7.0.jar</included-library>
             <included-library dirs="200">file.reference.javax.persistence-2.1.0.jar</included-library>
             <included-library dirs="200">file.reference.mysql-connector-java-8.0.18.jar</included-library>
+            <included-library dirs="200">file.reference.org-netbeans-modules-java-j2seproject-copylibstask.jar</included-library>
             <included-library dirs="200">file.reference.validation-api-2.0.1.Final.jar</included-library>
             <source-roots>
                 <root id="src.dir"/>

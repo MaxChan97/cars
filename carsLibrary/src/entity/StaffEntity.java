@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -76,7 +77,10 @@ public class StaffEntity implements Serializable {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(String firstName) throws InvalidInputException {
+        if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
+            throw new InvalidInputException("Invalid first name input, first names must not be empty and first names must start with an uppercase character!");
+        }
         this.firstName = firstName;
     }
 
@@ -84,7 +88,10 @@ public class StaffEntity implements Serializable {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(String lastName) throws InvalidInputException {
+        if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
+            throw new InvalidInputException("Invalid last name input, last names must not be empty and last names must start with an uppercase character!");
+        }
         this.lastName = lastName;
     }
     
@@ -96,7 +103,10 @@ public class StaffEntity implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws InvalidInputException {
+        if (password.length() < 6) {
+            throw new InvalidInputException("Password must be at least 6 characters long!");
+        }
         this.password = password;
     }
 
@@ -115,7 +125,10 @@ public class StaffEntity implements Serializable {
     /**
      * @param userName the userName to set
      */
-    public void setUserName(String userName) {
+    public void setUserName(String userName) throws InvalidInputException {
+        if (userName.equals("")) {
+            throw new InvalidInputException("Username cannot be empty!");
+        }
         this.userName = userName;
     }
     

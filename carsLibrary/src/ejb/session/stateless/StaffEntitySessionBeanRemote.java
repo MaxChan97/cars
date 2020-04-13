@@ -8,6 +8,7 @@ package ejb.session.stateless;
 import entity.StaffEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import util.exception.InvalidInputException;
 import util.exception.InvalidLoginException;
 import util.exception.StaffNotFoundException;
 
@@ -23,7 +24,7 @@ public interface StaffEntitySessionBeanRemote {
 
     public StaffEntity staffLogin(String username, String password) throws InvalidLoginException;
 
-    public void updateStaffEntity(StaffEntity staffEntity) throws StaffNotFoundException;
+    public void updateStaffEntity(StaffEntity staffEntity) throws StaffNotFoundException, InvalidInputException;
 
     public void deleteStaffEntity(Long id) throws StaffNotFoundException, SQLIntegrityConstraintViolationException;
 

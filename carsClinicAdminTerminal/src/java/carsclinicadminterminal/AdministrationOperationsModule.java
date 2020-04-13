@@ -110,7 +110,7 @@ public class AdministrationOperationsModule {
                         System.out.print("Enter Gender> ");
                         newPatient.setGender(scanner.nextLine().trim());
                         System.out.print("Enter Age> ");
-                        newPatient.setAge(new Integer(scanner.nextLine().trim()));// if users inputs a alphabet?
+                        newPatient.setAge(scanner.nextLine().trim());
                         System.out.print("Enter Phone Number> ");
                         newPatient.setPhoneNumber(scanner.nextLine().trim());
                         System.out.print("Enter Address> ");
@@ -171,7 +171,7 @@ public class AdministrationOperationsModule {
                         System.out.print("Enter Gender> ");
                         toUpdate.setGender(scanner.nextLine().trim());
                         System.out.print("Enter Age> ");
-                        toUpdate.setAge(new Integer(scanner.nextLine().trim()));
+                        toUpdate.setAge(scanner.nextLine().trim());
                         System.out.print("Enter Phone Number> ");
                         toUpdate.setPhoneNumber(scanner.nextLine().trim());
                         System.out.print("Enter Address> ");
@@ -370,18 +370,20 @@ public class AdministrationOperationsModule {
                 } else if (response == 6) {
                     System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  Leave Management ***\n");
                     scanner.nextLine();
-                    System.out.print("Enter doctor id> ");
-                    Long idLeave = Long.valueOf(scanner.nextLine().trim());
-
-                    System.out.print("Enter date that doctor " + idLeave + " wishes to apply for leaves in the following format YYYY-MM-DD> ");
-
-                    String dateInput = scanner.nextLine().trim();
-
-                    int year = Integer.valueOf(dateInput.substring(0, 4));
-                    int month = Integer.valueOf(dateInput.substring(5, 7));
-                    int date = Integer.valueOf(dateInput.substring(8, 10));
-
                     try {
+                        System.out.print("Enter doctor id> ");
+                        Long idLeave = Long.valueOf(scanner.nextLine().trim());
+
+                        System.out.print("Enter date that doctor " + idLeave + " wishes to apply for leaves in the following format YYYY-MM-DD> ");
+                        String dateInput = scanner.nextLine().trim();
+                        if (dateInput.length() != 10) {
+                            throw new InvalidInputException("Invalid date input!");
+                        }
+
+                        int year = Integer.valueOf(dateInput.substring(0, 4));
+                        int month = Integer.valueOf(dateInput.substring(5, 7));
+                        int date = Integer.valueOf(dateInput.substring(8, 10));
+
                         DoctorEntity doctorToUpdateLeave = doctorEntitySessionBean.retrieveDoctorEntityById(idLeave);
                         boolean canApply;
                         ArrayList<Date> datesAppliedForLeaves = doctorToUpdateLeave.getDatesAppliedForLeaves();
@@ -437,13 +439,16 @@ public class AdministrationOperationsModule {
                                 throw new InvalidInputException("Leave dates has to be at least one week apart!");
                             }
                         }
-                     }catch (NumberFormatException ex) {
-                            System.out.println("Invalid date/time inputted!");
-                            System.out.print("Press any key to continue...> ");
-                            scanner.nextLine();
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
+                        System.out.println();
+                        System.out.println("Invalid date/time inputted!");
                         System.out.println("Leave not applied!");
+                        System.out.print("Press any key to continue...> ");
+                        scanner.nextLine();
+                    } catch (Exception ex) {
+                        System.out.println();
                         System.out.println(ex.getMessage());
+                        System.out.println("Leave not applied!");
                         System.out.print("Press any key to continue...> ");
                         scanner.nextLine();
                     }

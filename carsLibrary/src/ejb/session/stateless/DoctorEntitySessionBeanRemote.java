@@ -10,6 +10,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.ejb.Remote;
 import util.exception.DoctorNotFoundException;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -24,7 +25,7 @@ public interface DoctorEntitySessionBeanRemote {
 
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException;
 
-    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException;
+    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException, InvalidInputException;
 
     public void deleteDoctorEntity(Long id) throws DoctorNotFoundException, SQLIntegrityConstraintViolationException;
 }

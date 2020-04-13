@@ -437,6 +437,10 @@ public class AdministrationOperationsModule {
                                 throw new InvalidInputException("Leave dates has to be at least one week apart!");
                             }
                         }
+                     }catch (NumberFormatException ex) {
+                            System.out.println("Invalid date/time inputted!");
+                            System.out.print("Press any key to continue...> ");
+                            scanner.nextLine();
                     } catch (Exception ex) {
                         System.out.println("Leave not applied!");
                         System.out.println(ex.getMessage());

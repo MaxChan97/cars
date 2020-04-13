@@ -80,20 +80,22 @@ public class AppointmentOperationsModule {
     private void doViewPatientAppointments() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** CARS :: Appointment Operation :: View Patient Appointment  ***\n");
-        System.out.print("Enter patient identity number to view appointments> ");
+        System.out.print("Enter Patient Identity Number> ");
         String id1 = scanner.nextLine().trim();
+        System.out.println();
 
         try {
             PatientEntity patient = patientEntitySessionBean.retrievePatientEntityByIdentityNum(id1);
             List<AppointmentEntity> appointments = patient.getAppointments();
             //List<AppointmentEntity> appointments = patientEntitySessionBean.viewAppointmentmentByPatientId(id1);
+            System.out.println("Appointments:");
             System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", "ID", " | ", "Date", " | ", "Time", " | ", "Doctor");
             for (AppointmentEntity appointment : appointments) {
                 System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", appointment.getAppointmentId().toString(), " | ", appointment.getAppointmentTimestamp().toString().substring(0, 10), " | ", appointment.getAppointmentTimestamp().toString().substring(11, 16), " | ", appointment.getDoctor().getFullName());
             }
+            System.out.println();
 
             System.out.print("Press any key to continue...> ");
-            System.out.println();
             scanner.nextLine();
 
         } catch (Exception ex) {
@@ -133,6 +135,7 @@ public class AppointmentOperationsModule {
             DoctorEntity doctorToAppoint = doctorEntitySessionBean.retrieveDoctorEntityById(id3);
             System.out.print("Enter Date> ");
             String dateInput = scanner.nextLine().trim();
+            System.out.println();
 
             int year = Integer.valueOf(dateInput.substring(0, 4));
             int month = Integer.valueOf(dateInput.substring(5, 7));
@@ -152,6 +155,7 @@ public class AppointmentOperationsModule {
                 System.out.print(timings.toString().substring(0, 5) + " ");
             }
             System.out.println();
+            System.out.println();
 
             System.out.print("Enter Time> ");
             String timeInput = scanner.nextLine().trim();
@@ -163,10 +167,9 @@ public class AppointmentOperationsModule {
             String patientId = scanner.nextLine().trim();
             appointmentEntitySessionBean.createAppointmentEntity(patientId, id3, newAppointment);
             PatientEntity patientForAppoint = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientId);
-            System.out.print(patientForAppoint.getFirstName() + " " + patientForAppoint.getLastName() + " appointment with " + doctorToAppoint.getFullName() + " at " + hours + ":" + min + " on " + year + "-" + month + "-" + date + " has been added.\n");
+            System.out.print(patientForAppoint.getFirstName() + " " + patientForAppoint.getLastName() + " appointment with " + doctorToAppoint.getFullName() + " at " + toAppoint.toString().substring(11, 16) + " on " + toAppoint.toString().substring(0,10) + " has been added.\n");
 
-            System.out.println("Press any key to continue...> ");
-            System.out.println();
+            System.out.print("Press any key to continue...> ");
             scanner.nextLine();
         } catch (Exception ex) {
             System.err.println(ex);
@@ -176,25 +179,29 @@ public class AppointmentOperationsModule {
     private void doCancelAppointment() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("*** CARS :: Appointment Operation :: Cancel Appointment  ***\n");
-        System.out.print("Enter patient identity number to view appointments> ");
+        System.out.print("Enter Patient Identity Number> ");
         String id2 = scanner.nextLine().trim();
+        System.out.println();
 
         try {
             PatientEntity patient = patientEntitySessionBean.retrievePatientEntityByIdentityNum(id2);
             List<AppointmentEntity> appointments = patientEntitySessionBean.viewAppointmentmentByPatientId(id2);
+            System.out.println("Appointments:");
             System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", "ID", " | ", "Date", " | ", "Time", " | ", "Doctor");
             for (AppointmentEntity appointment : appointments) {
                 System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", appointment.getAppointmentId().toString(), " | ", appointment.getAppointmentTimestamp().toString().substring(0, 10), " | ", appointment.getAppointmentTimestamp().toString().substring(11, 16), " | ", appointment.getDoctor().getFullName());
             }
-            System.out.println("Enter Appointment Id> ");
-            Long idToDelete = scanner.nextLong();
-            AppointmentEntity appointmentToDelete = appointmentEntitySessionBean.retrieveAppointmentEntityById(idToDelete);
-            patientEntitySessionBean.cancelAppointment(idToDelete, id2);
-            //appointmentEntitySessionBean.deleteAppointmentEntity(idToDelete);
-            System.out.print(patient.getFirstName() + " " + patient.getLastName() + " appointment with " + appointmentToDelete.getDoctor().getFullName() + " at " + appointmentToDelete.getAppointmentTimestamp().getHours() + " on " + appointmentToDelete.getAppointmentTimestamp().getDate() + " has been cancelled.");
-
-            System.out.println("Press any key to continue...> ");
             System.out.println();
+            
+            System.out.print("Enter Appointment Id> ");
+            Long idToDelete = Long.valueOf(scanner.nextLine().trim());
+            AppointmentEntity appointmentToDelete = appointmentEntitySessionBean.retrieveAppointmentEntityById(idToDelete);
+            Timestamp toDeleteTimestamp = appointmentToDelete.getAppointmentTimestamp();
+            //patientEntitySessionBean.cancelAppointment(idToDelete, id2);
+            appointmentEntitySessionBean.deleteAppointmentEntity(idToDelete);
+            System.out.println(patient.getFirstName() + " " + patient.getLastName() + " appointment with " + appointmentToDelete.getDoctor().getFullName() + " at " + toDeleteTimestamp.toString().substring(11, 16) + " on " + toDeleteTimestamp.toString().substring(0,10) + " has been cancelled.");
+
+            System.out.print("Press any key to continue...> ");
             scanner.nextLine();
         } catch (Exception ex) {
             System.err.println(ex.getMessage());

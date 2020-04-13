@@ -6,6 +6,7 @@
 package ejb.session.stateless;
 
 import entity.AppointmentEntity;
+import entity.ConsultationEntity;
 import entity.PatientEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Date;
@@ -101,8 +102,8 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         List<AppointmentEntity> appointmentEntities = entity.getAppointments();
         for (AppointmentEntity ae : appointmentEntities) {
             ae.setPatient(null);
+            em.remove(ae);
         }
-        
         em.remove(entity);
     }
     
@@ -111,7 +112,7 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         return toView.getAppointments();   
     }
     
-    public void addAppointment(Long doctorId, Date appointmentDate)throws DoctorNotFoundException{
+    public void addAppointment(Long doctorId, Date appointmentDate) throws DoctorNotFoundException{
         
         
         

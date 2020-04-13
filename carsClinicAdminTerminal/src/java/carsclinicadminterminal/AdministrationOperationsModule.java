@@ -8,6 +8,7 @@ package carsclinicadminterminal;
 import ejb.session.stateless.DoctorEntitySessionBeanRemote;
 import ejb.session.stateless.PatientEntitySessionBeanRemote;
 import ejb.session.stateless.StaffEntitySessionBeanRemote;
+import entity.AppointmentEntity;
 import entity.DoctorEntity;
 import entity.PatientEntity;
 import entity.StaffEntity;
@@ -400,7 +401,7 @@ public class AdministrationOperationsModule {
                             throw new IllegalArgumentException("Leave is less than a week from today. Doctor cannot apply for leave on given date " + dateToApplyLeave);
                         } else {
 
-                            if (doctorToUpdateLeave.getDatesWithAppointments().contains(dateToApplyLeave)) {
+                            if (doctorHasAppointmentOnLeaveDate(doctorToUpdateLeave, dateToApplyLeave)) {
                                 throw new IllegalArgumentException("Doctor have appointment on given date!");
                             } else if (doctorToUpdateLeave.getLeaves().contains(dateToApplyLeave)) {
                                 throw new IllegalArgumentException("Already applied for leave on the given date ");
@@ -570,8 +571,20 @@ public class AdministrationOperationsModule {
         }
 
     }
+    
+    private boolean doctorHasAppointmentOnLeaveDate(DoctorEntity doctor, Date date) {
+        List<AppointmentEntity> appointmentEntities = doctor.getAppointments();
+        for (AppointmentEntity ae : appointmentEntities) {
+            if (date.getYear() == ae.getAppointmentTimestamp().getYear()
+                    && date.getMonth() == ae.getAppointmentTimestamp().getMonth()
+                    && date.getDate() == ae.getAppointmentTimestamp().getDate()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public Long dayDiff(Date d1, Date d2) {
+    private Long dayDiff(Date d1, Date d2) {
         return (d1.getTime() - d2.getTime()) / (24 * 60 * 60 * 1000);
     }
 }

@@ -69,7 +69,6 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
         de.setNotAvail(doctorEntity.getNotAvail());
         de.setQualification(doctorEntity.getQualification());
         de.setRegistration(doctorEntity.getRegistration());
-        de.setDatesWithAppointments(doctorEntity.getDatesWithAppointments());
         de.setDatesAppliedForLeaves(doctorEntity.getDatesAppliedForLeaves());
     }
 
@@ -80,8 +79,8 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
         List<AppointmentEntity> appointmentEntities = toDelete.getAppointments();
         for (AppointmentEntity ae : appointmentEntities) {
             ae.setDoctor(null);
+            em.remove(ae);
         }
-        
         em.remove(toDelete);
     }
 }

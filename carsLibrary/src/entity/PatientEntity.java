@@ -33,9 +33,8 @@ public class PatientEntity implements Serializable {
     private String firstName;
     @Column(length = 255)
     private String lastName;
-
-    //@Enumerated(EnumType.STRING)
-    private String gender; // wanna use enum?
+    @Column(nullable = false)
+    private String gender; 
     @Column(nullable = false)
     private Integer age;
     @Column(nullable = false)

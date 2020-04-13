@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -135,21 +136,30 @@ public class AppointmentOperationsModule {
             DoctorEntity doctorToAppoint = doctorEntitySessionBean.retrieveDoctorEntityById(id3);
             System.out.print("Enter Date> ");
             String dateInput = scanner.nextLine().trim();
+            if (dateInput.length() != 10) {
+                throw new InvalidInputException("Invalid date entered!");
+            }
             System.out.println();
 
             int year = Integer.valueOf(dateInput.substring(0, 4));
             int month = Integer.valueOf(dateInput.substring(5, 7));
             int date = Integer.valueOf(dateInput.substring(8, 10));
 
+            Date apptDate = new Date(year - 1900, month - 1, date);
+            Date currDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
+            if (dayDiff(apptDate, currDate) < 2) {
+                throw new InvalidInputException("You need to book an appointment at least 2 days in advance!");
+            }
+
             List<Time> allTimeSlots = getAllTimeSlots();
             List<Time> availableTimeslot = new ArrayList<>();
             HashSet<Timestamp> notAvail = doctorToAppoint.getNotAvail();
             for (Time timings : allTimeSlots) {
-                if (!notAvail.contains(new Timestamp(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate(), timings.getHours(), timings.getMinutes(), timings.getSeconds(), 0))) {
+                if (!notAvail.contains(new Timestamp(year - 1900, month - 1, date, timings.getHours(), timings.getMinutes(), timings.getSeconds(), 0))) {
                     availableTimeslot.add(timings);
                 }
             }
-            System.out.print("Availability for " + doctorToAppoint.getFullName() + " on " + (year) + "-" + (month) + "-" + date);
+            System.out.print("Availability for " + doctorToAppoint.getFullName() + " on " + dateInput);
             System.out.println();
             for (Time timings : availableTimeslot) {
                 System.out.print(timings.toString().substring(0, 5) + " ");
@@ -161,18 +171,26 @@ public class AppointmentOperationsModule {
             String timeInput = scanner.nextLine().trim();
             int hours = Integer.valueOf(timeInput.substring(0, 2));
             int min = Integer.valueOf(timeInput.substring(3, 5));
-            Timestamp toAppoint = new Timestamp(year-1900, month-1, date, hours, min, 0, 0);
+            Timestamp toAppoint = new Timestamp(year - 1900, month - 1, date, hours, min, 0, 0);
             AppointmentEntity newAppointment = new AppointmentEntity(toAppoint);
             System.out.print("Enter Patient Identity Number> ");
             String patientId = scanner.nextLine().trim();
             appointmentEntitySessionBean.createAppointmentEntity(patientId, id3, newAppointment);
             PatientEntity patientForAppoint = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientId);
-            System.out.print(patientForAppoint.getFirstName() + " " + patientForAppoint.getLastName() + " appointment with " + doctorToAppoint.getFullName() + " at " + toAppoint.toString().substring(11, 16) + " on " + toAppoint.toString().substring(0,10) + " has been added.\n");
+            System.out.print(patientForAppoint.getFirstName() + " " + patientForAppoint.getLastName() + " appointment with " + doctorToAppoint.getFullName() + " at " + toAppoint.toString().substring(11, 16) + " on " + toAppoint.toString().substring(0, 10) + " has been added.\n");
+            System.out.println();
 
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
+        } catch (NumberFormatException ex) {
+            System.out.println("Invalid date/time inputted!");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         } catch (Exception ex) {
-            System.err.println(ex);
+            System.out.println(ex.getMessage());
+            System.out.println("Appointment not booked!");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
     }
 
@@ -192,14 +210,14 @@ public class AppointmentOperationsModule {
                 System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", appointment.getAppointmentId().toString(), " | ", appointment.getAppointmentTimestamp().toString().substring(0, 10), " | ", appointment.getAppointmentTimestamp().toString().substring(11, 16), " | ", appointment.getDoctor().getFullName());
             }
             System.out.println();
-            
+
             System.out.print("Enter Appointment Id> ");
             Long idToDelete = Long.valueOf(scanner.nextLine().trim());
             AppointmentEntity appointmentToDelete = appointmentEntitySessionBean.retrieveAppointmentEntityById(idToDelete);
             Timestamp toDeleteTimestamp = appointmentToDelete.getAppointmentTimestamp();
             //patientEntitySessionBean.cancelAppointment(idToDelete, id2);
             appointmentEntitySessionBean.deleteAppointmentEntity(idToDelete);
-            System.out.println(patient.getFirstName() + " " + patient.getLastName() + " appointment with " + appointmentToDelete.getDoctor().getFullName() + " at " + toDeleteTimestamp.toString().substring(11, 16) + " on " + toDeleteTimestamp.toString().substring(0,10) + " has been cancelled.");
+            System.out.println(patient.getFirstName() + " " + patient.getLastName() + " appointment with " + appointmentToDelete.getDoctor().getFullName() + " at " + toDeleteTimestamp.toString().substring(11, 16) + " on " + toDeleteTimestamp.toString().substring(0, 10) + " has been cancelled.");
 
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
@@ -270,7 +288,7 @@ public class AppointmentOperationsModule {
         return allTimeSlots;
     }
 
-    public Long dayDiff(java.sql.Date d1, java.sql.Date d2) {
+    public Long dayDiff(Date d1, Date d2) {
         return (d1.getTime() - d2.getTime()) / (24 * 60 * 60 * 1000);
     }
 }

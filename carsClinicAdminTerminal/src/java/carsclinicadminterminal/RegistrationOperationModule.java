@@ -281,12 +281,12 @@ public class RegistrationOperationModule {
             HashSet<Long> appointmentIds = new HashSet<>();
             for (AppointmentEntity ae : appointments) {
                 appointmentIds.add(ae.getAppointmentId());
-                String date = String.valueOf(ae.getAppointmentTimestamp().getYear() + 1900) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getMonth()) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getDay());
-                String time = String.format("%02d", ae.getAppointmentTimestamp().getHours()) + ":" + String.format("%02d", ae.getAppointmentTimestamp().getMinutes());
+                String date = String.valueOf(ae.getAppointmentTimestamp().getYear() + 1900) + "-" + String.format("%-20d", ae.getAppointmentTimestamp().getMonth()) + "-" + String.format("%-20", ae.getAppointmentTimestamp().getDay());
+                String time = String.format("%-20d", ae.getAppointmentTimestamp().getHours()) + ":" + String.format("%-20d", ae.getAppointmentTimestamp().getMinutes());
                 if (ae.getAppointmentId() < 100) {
-                    System.out.println(String.format("%02d", ae.getAppointmentId()) + " |" + date + " |" + time + " |" + ae.getDoctor().getFullName());
+                    System.out.println(String.format("%-20d", ae.getAppointmentId()) + " |" + date + " |" + time + " |" + ae.getDoctor().getFullName());
                 } else {
-                    System.out.println(String.format("%02d", ae.getAppointmentId()) + "|" + date + " |" + time + " |" + ae.getDoctor().getFullName());
+                    System.out.println(String.format("%-20d", ae.getAppointmentId()) + "|" + date + " |" + time + " |" + ae.getDoctor().getFullName());
                 }
             }
             System.out.println();

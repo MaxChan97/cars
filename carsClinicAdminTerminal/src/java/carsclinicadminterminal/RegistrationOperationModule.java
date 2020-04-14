@@ -274,7 +274,7 @@ public class RegistrationOperationModule {
             }
 
             System.out.println("Appointments:");
-            System.out.println("Id |Date       |Time  |Doctor");
+            System.out.printf("%-20%-2s%-20s%-2s%-20s%-2s%-20s" ,"Id" +"|" + "Date" +"|" + "Time" +"|" + "Doctor");
             if (hasAppointment == false) {
                 throw new NoAppointmentBookedException(patientEntity.getFullName() + " does not have any appointments booked!");
             }

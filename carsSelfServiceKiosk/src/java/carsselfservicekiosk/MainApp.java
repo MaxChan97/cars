@@ -112,7 +112,7 @@ public class MainApp {
             System.out.print("Enter Gender> ");
             newPatientEntity.setGender(scanner.nextLine().trim());
             System.out.print("Enter Age> ");
-            newPatientEntity.setAge(new Integer(scanner.nextLine().trim()));
+            newPatientEntity.setAge(scanner.nextLine().trim());
             System.out.print("Enter Phone> ");
             newPatientEntity.setPhoneNumber(scanner.nextLine().trim());
             System.out.print("Enter Address> ");

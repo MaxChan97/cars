@@ -15,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import util.exception.InvalidInputException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -28,11 +29,13 @@ public class PatientEntity implements Serializable {
     @Column(unique = true, nullable = false, length = 9)
     private String identityNum;
 
-    @Column(nullable = false, length = 6)
+    @Column(nullable = false)
     private String password;
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 32)
+    private String salt;
+    @Column(nullable = false)
     private String firstName;
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String lastName;
     @Column(nullable = false, length = 1)
     private String gender;
@@ -48,18 +51,85 @@ public class PatientEntity implements Serializable {
 
     public PatientEntity() {
         this.appointments = new ArrayList<AppointmentEntity>();
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
-    public PatientEntity(String identityNum, String password, String firstName, String lastName, String gender, String age, String phoneNumber, String address) {
+    public PatientEntity(String identityNum, String password, String firstName, String lastName, String gender, String age, String phoneNumber, String address) throws InvalidInputException {
         this();
+        
+        if (identityNum.length() != 9) {
+            throw new InvalidInputException("Invalid identity number\nPlease input valid NRIC/Passport number");
+        }
+        Character firstChar = identityNum.charAt(0);
+        Character lastChar = identityNum.charAt(8);
+        if (!Character.isUpperCase(firstChar) || !Character.isUpperCase(lastChar)) {
+            throw new InvalidInputException("Invalid identity number\nPlease input valid NRIC/Passport number");
+        }
+        try {
+            int checkIdentityNum = Integer.valueOf(identityNum.substring(1, 8));
+        } catch (NumberFormatException ex) {
+            throw new InvalidInputException("Invalid identity number!\nPlease input valid NRIC/Passport number");
+        }
 
         this.identityNum = identityNum;
-        this.password = password;
+        
+        if (password.length() != 6) {
+            throw new InvalidInputException("Invalid Password!\nPassword must be exactly 6 digits long and numeric!");
+        }
+        try {
+            int checkPassword = Integer.valueOf(password);
+        } catch (NumberFormatException ex) {
+            throw new InvalidInputException("Invalid Password\nPassword must be exactly 6 digits long and numeric!");
+        }
+        
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+        
+        if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
+            throw new InvalidInputException("Invalid first name input!\nFirst names must not be empty and First names must start with an uppercase character!");
+        }
+        
         this.firstName = firstName;
+        
+        if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
+            throw new InvalidInputException("Invalid last name input\nLast names must not be empty and Last names must start with an uppercase character!");
+        }
+        
         this.lastName = lastName;
-        this.gender = gender;
+        
+        if (gender.equals("M") || gender.equals("m") || gender.equals("male") || gender.equals("Male")) {
+            this.gender = "M";
+        } else if (gender.equals("F") || gender.equals("f") || gender.equals("female") || gender.equals("Female")) {
+            this.gender = "F";
+        } else {
+            throw new InvalidInputException("Gender entered is not valid!\nPlease enter either M or F!");
+        }
+        
+        if (age.equals("")) {
+            throw new InvalidInputException("Age entered is not valid!\nPlease enter a number!");
+        }
+        try {
+            long checkAge = Long.valueOf(age);
+        } catch (NumberFormatException ex) {
+            throw new InvalidInputException("Age entered is not valid!\nPlease enter a number!");
+        }
+        
         this.age = age;
+        
+        if (phoneNumber.equals("")) {
+            throw new InvalidInputException("Phone Number entered is not valid\nPlease enter phone number without area or country code!");
+        }
+        try {
+            long checkPhoneNumber = Long.valueOf(phoneNumber);
+        } catch (NumberFormatException ex) {
+            throw new InvalidInputException("Phone Number entered is not valid\nPlease enter phone number without area or country code!");
+        }
+        
         this.phoneNumber = phoneNumber;
+        
+        if (address.equals("")) {
+            throw new InvalidInputException("Address entered is not valid!\nAddress entered must not be empty!");
+        }
+        
         this.address = address;
     }
 
@@ -88,15 +158,18 @@ public class PatientEntity implements Serializable {
     }
 
     public void setIdentityNum(String identityNum) throws InvalidInputException {
+        if (identityNum.length() != 9) {
+            throw new InvalidInputException("Invalid identity number\nPlease input valid NRIC/Passport number");
+        }
         Character firstChar = identityNum.charAt(0);
         Character lastChar = identityNum.charAt(8);
-        if (identityNum.length() != 9 || !Character.isUpperCase(firstChar) || !Character.isUpperCase(lastChar)) {
-            throw new InvalidInputException("Invalid identity number, please input valid NRIC/Passport number");
+        if (!Character.isUpperCase(firstChar) || !Character.isUpperCase(lastChar)) {
+            throw new InvalidInputException("Invalid identity number\nPlease input valid NRIC/Passport number");
         }
         try {
             int checkIdentityNum = Integer.valueOf(identityNum.substring(1, 8));
         } catch (NumberFormatException ex) {
-            throw new InvalidInputException("Invalid identity number, please input valid NRIC/Passport number");
+            throw new InvalidInputException("Invalid identity number!\nPlease input valid NRIC/Passport number");
         }
 
         this.identityNum = identityNum;
@@ -108,14 +181,14 @@ public class PatientEntity implements Serializable {
 
     public void setPassword(String password) throws InvalidInputException {
         if (password.length() != 6) {
-            throw new InvalidInputException("Password must be 6 digits long!");
+            throw new InvalidInputException("Invalid Password!\nPassword must be exactly 6 digits long and numeric!");
         }
         try {
             int checkPassword = Integer.valueOf(password);
         } catch (NumberFormatException ex) {
-            throw new InvalidInputException("Password must numeric!");
+            throw new InvalidInputException("Invalid Password\nPassword must be exactly 6 digits long and numeric!");
         }
-        this.password = password;
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
     }
 
     public String getFirstName() {
@@ -124,7 +197,7 @@ public class PatientEntity implements Serializable {
 
     public void setFirstName(String firstName) throws InvalidInputException {
         if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
-            throw new InvalidInputException("Invalid first name input, first names must not be empty and first names must start with an uppercase character!");
+            throw new InvalidInputException("Invalid first name input!\nFirst names must not be empty and First names must start with an uppercase character!");
         }
         this.firstName = firstName;
     }
@@ -135,7 +208,7 @@ public class PatientEntity implements Serializable {
 
     public void setLastName(String lastName) throws InvalidInputException {
         if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
-            throw new InvalidInputException("Invalid last name input, last names must not be empty and last names must start with an uppercase character!");
+            throw new InvalidInputException("Invalid last name input\nLast names must not be empty and Last names must start with an uppercase character!");
         }
         this.lastName = lastName;
     }
@@ -154,7 +227,7 @@ public class PatientEntity implements Serializable {
         } else if (gender.equals("F") || gender.equals("f") || gender.equals("female") || gender.equals("Female")) {
             this.gender = "F";
         } else {
-            throw new InvalidInputException("Gender entered is not valid!");
+            throw new InvalidInputException("Gender entered is not valid!\nPlease enter either M or F!");
         }
     }
 
@@ -163,10 +236,13 @@ public class PatientEntity implements Serializable {
     }
 
     public void setAge(String age) throws InvalidInputException {
+        if (age.equals("")) {
+            throw new InvalidInputException("Age entered is not valid!\nPlease enter a number!");
+        }
         try {
             long checkAge = Long.valueOf(age);
         } catch (NumberFormatException ex) {
-            throw new InvalidInputException("Age entered is not valid, please enter a number!");
+            throw new InvalidInputException("Age entered is not valid!\nPlease enter a number!");
         }
         this.age = age;
     }
@@ -176,10 +252,13 @@ public class PatientEntity implements Serializable {
     }
 
     public void setPhoneNumber(String phoneNumber) throws InvalidInputException {
+        if (phoneNumber.equals("")) {
+            throw new InvalidInputException("Phone Number entered is not valid\nPlease enter phone number without area or country code!");
+        }
         try {
             long checkPhoneNumber = Long.valueOf(phoneNumber);
         } catch (NumberFormatException ex) {
-            throw new InvalidInputException("Phone Number entered is not valid, please enter phone number without area or country code!");
+            throw new InvalidInputException("Phone Number entered is not valid\nPlease enter phone number without area or country code!");
         }
         this.phoneNumber = phoneNumber;
     }
@@ -188,7 +267,10 @@ public class PatientEntity implements Serializable {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(String address) throws InvalidInputException {
+        if (address.equals("")) {
+            throw new InvalidInputException("Address entered is not valid!\nAddress entered must not be empty!");
+        }
         this.address = address;
     }
 

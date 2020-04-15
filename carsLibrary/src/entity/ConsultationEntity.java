@@ -8,6 +8,7 @@ package entity;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,7 +30,9 @@ public class ConsultationEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long consultationId;
+    @Column(nullable = false)
     private Integer queueNumber;
+    @Column(nullable = false)
     private Integer duration;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

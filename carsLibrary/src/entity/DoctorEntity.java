@@ -106,7 +106,7 @@ public class DoctorEntity implements Serializable {
 
     public void setFirstName(String firstName) throws InvalidInputException {
         if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
-            throw new InvalidInputException("Invalid first name input, first names must not be empty and first names must start with an uppercase character!");
+            throw new InvalidInputException("Invalid first name input\nFirst names must not be empty and First names must start with an uppercase character!");
         }
         this.firstName = firstName;
     }
@@ -117,7 +117,7 @@ public class DoctorEntity implements Serializable {
 
     public void setLastName(String lastName) throws InvalidInputException {
         if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
-            throw new InvalidInputException("Invalid last name input, last names must not be empty and last names must start with an uppercase character!");
+            throw new InvalidInputException("Invalid last name input\nLast names must not be empty and Last names must start with an uppercase character!");
         }
         this.lastName = lastName;
     }
@@ -128,7 +128,7 @@ public class DoctorEntity implements Serializable {
 
     public void setRegistration(String registration) throws InvalidInputException {
         if (registration.equals("")) {
-            throw new InvalidInputException("Registration cannot be empty");
+            throw new InvalidInputException("Invalid Registration Input!\nRegistration cannot be empty!");
         }
         this.registration = registration;
     }
@@ -139,7 +139,7 @@ public class DoctorEntity implements Serializable {
 
     public void setQualification(String qualification) throws InvalidInputException {
         if (qualification.equals("")) {
-            throw new InvalidInputException("Qualification cannot be empty");
+            throw new InvalidInputException("Invalid Qualification Input!\nQualification cannot be empty!");
         }
         this.qualification = qualification;
     }

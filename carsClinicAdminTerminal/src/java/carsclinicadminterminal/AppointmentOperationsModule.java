@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.InvalidInputException;
@@ -101,8 +102,8 @@ public class AppointmentOperationsModule {
             scanner.nextLine();
 
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            System.out.println("Could not view patient's appointment details, please key in the corret input!");
+            System.out.println(ex.getMessage());
+            System.out.println("Could not view patient's appointment details!");
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
         }
@@ -133,11 +134,19 @@ public class AppointmentOperationsModule {
             }
             System.out.println();
             System.out.print("Enter Doctor Id> ");
-            Long id3 = Long.valueOf(scanner.nextLine().trim());
+            Long id3 = Long.valueOf("0");
+            try {
+                id3 = Long.valueOf(scanner.nextLine().trim());
+            } catch (NumberFormatException ex) {
+                throw new InvalidInputException("Invalid doctor ID entered!\nPlease select one of doctor ID shown!");
+            }
             DoctorEntity doctorToAppoint = doctorEntitySessionBean.retrieveDoctorEntityById(id3);
             System.out.print("Enter Date> ");
             String dateInput = scanner.nextLine().trim();
             if (dateInput.length() != 10) {
+                throw new InvalidInputException("Invalid date entered!\nPlease enter date with format YYYY-MM-DD");
+            }
+            if (dateInput.charAt(4) != '-' || dateInput.charAt(7) != '-') {
                 throw new InvalidInputException("Invalid date entered!\nPlease enter date with format YYYY-MM-DD");
             }
             System.out.println();
@@ -176,10 +185,13 @@ public class AppointmentOperationsModule {
             System.out.println();
             System.out.println();
 
-            System.out.print("Enter Time> ");
+            System.out.print("Enter Time with format HH:MM> ");
 
             String timeInput = scanner.nextLine().trim();
             if (timeInput.length() != 5) {
+                throw new InvalidInputException("Invalid time entered!\nPlease enter time with format HH:MM");
+            }
+            if (timeInput.charAt(2) != ':') {
                 throw new InvalidInputException("Invalid time entered!\nPlease enter time with format HH:MM");
             }
             int hours = -1;
@@ -193,7 +205,7 @@ public class AppointmentOperationsModule {
             } catch (NumberFormatException ex) {
                 throw new InvalidInputException("Invalid time entered!\nPlease enter time with format HH:MM");
             }
-            
+
             if (!availableTimeslot.contains(new Time(hours, min, 0))) {
                 throw new InvalidInputException("Invalid time entered!\nPlease enter one of the time displayed!");
             }
@@ -209,6 +221,13 @@ public class AppointmentOperationsModule {
 
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
+        } catch (javax.ejb.EJBException ex) {
+            //try to give details about booking that has already been placed
+            System.out.println();
+            System.out.println("Patient already has existing appointment with another doctor at this time and date!\nUnable to book appointment!");
+            System.out.println("Appointment not booked!");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         } catch (Exception ex) {
             System.out.println();
             System.out.println(ex.getMessage());
@@ -220,6 +239,7 @@ public class AppointmentOperationsModule {
 
     private void doCancelAppointment() {
         Scanner scanner = new Scanner(System.in);
+        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 31, 0, 0);
         System.out.println("*** CARS :: Appointment Operation :: Cancel Appointment  ***\n");
         System.out.print("Enter Patient Identity Number> ");
         String id2 = scanner.nextLine().trim();
@@ -233,31 +253,35 @@ public class AppointmentOperationsModule {
             if (appointments.size() == 0) {
                 throw new NoAppointmentBookedException(patient.getFullName() + " does not have any appointments to cancel!");
             }
-            
+
+            List<AppointmentEntity> cancellableAppointments = new ArrayList<>();
             for (AppointmentEntity appointment : appointments) {
-                System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", appointment.getAppointmentId().toString(), " | ", appointment.getAppointmentTimestamp().toString().substring(0, 10), " | ", appointment.getAppointmentTimestamp().toString().substring(11, 16), " | ", appointment.getDoctor().getFullName());
+                if (appointment.getAppointmentTimestamp().after(currentTimestamp) || appointment.getAppointmentTimestamp().equals(currentTimestamp)) {
+                    cancellableAppointments.add(appointment);
+                    System.out.printf("%8s%2s%20s%2s%20s%2s%15s\n", appointment.getAppointmentId().toString(), " | ", appointment.getAppointmentTimestamp().toString().substring(0, 10), " | ", appointment.getAppointmentTimestamp().toString().substring(11, 16), " | ", appointment.getDoctor().getFullName());
+                }
             }
             System.out.println();
 
             System.out.print("Enter Appointment Id> ");
             Long idToDelete = Long.valueOf(0);
-            
+
             try {
                 idToDelete = Long.valueOf(scanner.nextLine().trim());
             } catch (NumberFormatException ex) {
-                throw new InvalidInputException("Appointment Id entered is not valid!\nPlease enter one of the Appointment Ids shown"); 
+                throw new InvalidInputException("Appointment Id entered is not valid!\nPlease enter one of the Appointment Ids shown");
             }
-            
+
             boolean validInput = false;
-            for (AppointmentEntity ae : appointments) {
+            for (AppointmentEntity ae : cancellableAppointments) {
                 if (ae.getAppointmentId().equals(idToDelete)) {
                     validInput = true;
                 }
             }
             if (!validInput) {
-                throw new InvalidInputException("Appointment Id entered is not valid!\nPlease enter one of the Appointment Ids shown"); 
+                throw new InvalidInputException("Appointment Id entered is not valid!\nPlease enter one of the Appointment Ids shown");
             }
-            
+
             AppointmentEntity appointmentToDelete = appointmentEntitySessionBean.retrieveAppointmentEntityById(idToDelete);
             Timestamp toDeleteTimestamp = appointmentToDelete.getAppointmentTimestamp();
             appointmentEntitySessionBean.deleteAppointmentEntity(idToDelete);
@@ -266,10 +290,9 @@ public class AppointmentOperationsModule {
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
+            System.out.println(ex.getMessage());
             System.out.println("No appointment cancelled!");
             System.out.print("Press any key to continue...> ");
-            System.out.println();
             scanner.nextLine();
         }
     }
@@ -332,7 +355,7 @@ public class AppointmentOperationsModule {
         return allTimeSlots;
     }
 
-    public Long dayDiff(Date d1, Date d2) {
-        return (d1.getTime() - d2.getTime()) / (24 * 60 * 60 * 1000);
+private Long dayDiff(Date d1, Date d2) {
+        return Math.abs((d1.getTime() - d2.getTime()) / (24 * 60 * 60 * 1000));
     }
 }

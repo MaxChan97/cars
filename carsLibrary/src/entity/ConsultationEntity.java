@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -100,6 +101,7 @@ public class ConsultationEntity implements Serializable {
         this.duration = duration;
     }
 
+    @XmlTransient
     public AppointmentEntity getAppointment() {
         return appointment;
     }

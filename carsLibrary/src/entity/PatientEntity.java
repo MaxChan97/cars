@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -46,7 +47,7 @@ public class PatientEntity implements Serializable {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "patient")
+    @OneToMany(mappedBy = "patient", fetch = FetchType.EAGER)
     private List<AppointmentEntity> appointments;
 
     public PatientEntity() {
@@ -188,7 +189,7 @@ public class PatientEntity implements Serializable {
         } catch (NumberFormatException ex) {
             throw new InvalidInputException("Invalid Password\nPassword must be exactly 6 digits long and numeric!");
         }
-        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.getSalt()));
     }
 
     public String getFirstName() {
@@ -285,6 +286,20 @@ public class PatientEntity implements Serializable {
     @Override
     public String toString() {
         return "Patient[ identity number =" + identityNum + "name =  " + this.firstName + " " + this.lastName + " gender= " + this.gender + " age= " + this.age + " phone =" + this.phoneNumber + "address =" + this.address + " ]";
+    }
+
+    /**
+     * @return the salt
+     */
+    public String getSalt() {
+        return salt;
+    }
+
+    /**
+     * @param salt the salt to set
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
 }

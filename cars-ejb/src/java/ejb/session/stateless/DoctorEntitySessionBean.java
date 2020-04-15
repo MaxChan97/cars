@@ -52,7 +52,7 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
     @Override
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException {
         DoctorEntity entity = em.find(DoctorEntity.class, id);
-        entity.getAppointments().size();
+        //entity.getAppointments().size();
         
         if (entity != null) {
             return entity;

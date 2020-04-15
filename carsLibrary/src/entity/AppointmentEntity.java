@@ -15,11 +15,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Max
  */
+@Table(
+        uniqueConstraints=
+                   @UniqueConstraint(columnNames={"patient_id", "appointmentTimestamp"})
+)
 @Entity
 public class AppointmentEntity implements Serializable {
 
@@ -31,7 +38,7 @@ public class AppointmentEntity implements Serializable {
     private Timestamp appointmentTimestamp;
     
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "patient_id")
     private PatientEntity patient;
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -113,6 +120,7 @@ public class AppointmentEntity implements Serializable {
     /**
      * @return the consultation
      */
+    //@XmlTransient
     public ConsultationEntity getConsultation() {
         return consultation;
     }

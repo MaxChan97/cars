@@ -26,14 +26,12 @@ public class Main {
     private static AppointmentEntitySessionBeanRemote appointmentEntitySessionBean;
     @EJB
     private static ConsultationEntitySessionBeanRemote consultationEntitySessionBean;
-    @EJB
-    private static StaffEntitySessionBeanRemote staffEntitySessionBean;
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MainApp mainApp = new MainApp(patientEntitySessionBean, doctorEntitySessionBean, appointmentEntitySessionBean, consultationEntitySessionBean, staffEntitySessionBean);
+        MainApp mainApp = new MainApp(patientEntitySessionBean, doctorEntitySessionBean, appointmentEntitySessionBean, consultationEntitySessionBean);
         mainApp.runApp();
     }
     

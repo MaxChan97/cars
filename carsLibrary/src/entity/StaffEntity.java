@@ -130,7 +130,7 @@ public class StaffEntity implements Serializable {
         if (password.length() < 6) {
             throw new InvalidInputException("Invalid Password Input!\nPassword must be at least 6 characters long!");
         }
-        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.getSalt()));
     }
 
     @Override
@@ -153,6 +153,20 @@ public class StaffEntity implements Serializable {
             throw new InvalidInputException("Invalid Username Input\nUsername cannot be empty!");
         }
         this.userName = userName;
+    }
+
+    /**
+     * @return the salt
+     */
+    public String getSalt() {
+        return salt;
+    }
+
+    /**
+     * @param salt the salt to set
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
     
 }

@@ -96,11 +96,9 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
         }
         PatientEntity pe = appointment.getPatient();
         pe.getAppointments().remove(appointment);
-        appointment.setPatient(null);
         DoctorEntity de = appointment.getDoctor();
         de.getAppointments().remove(appointment);
         de.getNotAvail().remove(appointment.getAppointmentTimestamp());
-        appointment.setDoctor(null);
         em.remove(appointment);
     }
 }

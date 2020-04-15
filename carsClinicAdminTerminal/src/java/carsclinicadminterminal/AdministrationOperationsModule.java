@@ -15,6 +15,7 @@ import entity.StaffEntity;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.InvalidInputException;
@@ -199,7 +200,6 @@ public class AdministrationOperationsModule {
         try {
             PatientEntity newPatient = new PatientEntity();
             System.out.println("*** CARS :: Administration Operation :: Patient Management ::  Add Patient ***\n");
-            scanner.nextLine();
             System.out.print("Enter Identity number> ");
             newPatient.setIdentityNum(scanner.nextLine().trim());
 
@@ -222,6 +222,12 @@ public class AdministrationOperationsModule {
             System.out.println("New patient has been added successfully\n");
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
+        } catch (javax.ejb.EJBException ex) {
+            System.out.println();
+            System.out.println("There already exists a patient record with entered Identity Number!");
+            System.out.println("Patient not added!");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         } catch (Exception ex) {
             System.out.println();
             System.out.println(ex.getMessage());
@@ -235,7 +241,6 @@ public class AdministrationOperationsModule {
         Scanner scanner = new Scanner(System.in);
         try {
             System.out.println("*** CARS :: Administration Operation :: Patient Management ::  View Patient Details ***\n");
-            scanner.nextLine();
             System.out.print("Enter patient identity number to view details> ");
             String id1 = scanner.nextLine().trim();
             System.out.println();
@@ -258,7 +263,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Patient Management ::  Update Patient ***\n");
-            scanner.nextLine();
             System.out.print("Enter patient identity number to update> ");
             String id = scanner.nextLine().trim();
             PatientEntity updating = patientEntitySessionBean.retrievePatientEntityByIdentityNum(id);
@@ -295,7 +299,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Patient Management ::  Delete Patient ***\n");
-            scanner.nextLine();
             System.out.print("Enter identity number of patient to delete> ");
             String id = scanner.nextLine().trim();
             patientEntitySessionBean.deletePatientEntity(id);
@@ -316,7 +319,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Patient Management ::  View All Patients ***\n");
-            scanner.nextLine();
             List<PatientEntity> patients = patientEntitySessionBean.retrieveAllPatientEntities();
 
             System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Patient ID", "First Name", "Last Name", "Gender", "Age", "Phone", "Address");
@@ -341,7 +343,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  Add Doctor ***\n");
-            scanner.nextLine();
             DoctorEntity newDoctor = new DoctorEntity();
             System.out.print("Enter Doctor's first name> ");
             newDoctor.setFirstName(scanner.nextLine().trim());
@@ -370,7 +371,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  View Doctor Details ***\n");
-            scanner.nextLine();
             System.out.print("Enter doctor Id> ");
             Long id = Long.valueOf("0");
             try {
@@ -398,7 +398,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Doctor Management :: Update Doctor ***\n");
-            scanner.nextLine();
             System.out.print("Enter Id of doctor to update> ");
             Long id4 = Long.valueOf("0");
             try {
@@ -441,7 +440,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  Delete Doctor ***\n");
-            scanner.nextLine();
             System.out.print("Enter identity number of doctor to delete> ");
             Long id = Long.valueOf("0");
             try {
@@ -467,7 +465,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  View All Doctors ***\n");
-            scanner.nextLine();
             System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Doctor ID", "First Name", "Last Name", "Registration", "Qualification");
             List<DoctorEntity> doctors = doctorEntitySessionBean.retrieveAllDoctorEntities();
             for (DoctorEntity pe : doctors) {
@@ -490,7 +487,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Doctor Management ::  Leave Management ***\n");
-            scanner.nextLine();
             System.out.print("Enter doctor id> ");
 
             Long idLeave = Long.valueOf("0");
@@ -504,6 +500,9 @@ public class AdministrationOperationsModule {
             String dateInput = scanner.nextLine().trim();
             if (dateInput.length() != 10) {
                 throw new InvalidInputException("Invalid date input!\nPlease enter a valid date in following format YYYY-MM-DD");
+            }
+            if (dateInput.charAt(4) != '-' || dateInput.charAt(7) != '-') {
+                throw new InvalidInputException("Invalid date entered!\nPlease enter date with format YYYY-MM-DD");
             }
 
             int year = -1;
@@ -571,7 +570,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Staff Management ::  Add Staff ***\n");
-            scanner.nextLine();
             StaffEntity newStaff = new StaffEntity();
             System.out.print("Enter Staff's first name> ");
             newStaff.setFirstName(scanner.nextLine().trim());
@@ -584,6 +582,12 @@ public class AdministrationOperationsModule {
             staffEntitySessionBean.createStaffEntity(newStaff);
             System.out.println("Staff successfully created");
             System.out.println();
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
+        } catch (javax.ejb.EJBException ex) {
+            System.out.println();
+            System.out.println("There already exists a staff record with entered Username!\nPlease try another Username!");
+            System.out.println("Patient not added!");
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
         } catch (Exception ex) {
@@ -599,7 +603,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Staff Management ::  View Staff Details ***\n");
-            scanner.nextLine();
             System.out.print("Enter staff username to view details> ");
             String id3 = scanner.nextLine().trim();
             StaffEntity staff = staffEntitySessionBean.retrieveStaffEntityByUsername(id3);
@@ -622,7 +625,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Staff Management :: Update Staff ***\n");
-            scanner.nextLine();
             System.out.print("Enter Username of staff to update> ");
             String id = scanner.nextLine().trim();
             StaffEntity toUpdate = staffEntitySessionBean.retrieveStaffEntityByUsername(id);
@@ -654,7 +656,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Staff Management ::  Delete Staff ***\n");
-            scanner.nextLine();
             System.out.print("Enter Username of staff to delete> ");
             String id = scanner.nextLine().trim();
             staffEntitySessionBean.deleteStaffEntity(staffEntitySessionBean.retrieveStaffEntityByUsername(id).getStaffId());
@@ -677,7 +678,6 @@ public class AdministrationOperationsModule {
 
         try {
             System.out.println("*** CARS :: Administration Operation :: Staff Management ::  View All Staff ***\n");
-            scanner.nextLine();
             List<StaffEntity> staffs = staffEntitySessionBean.retrieveAllStaffEntities();
             System.out.printf("%-20s%-20s%-20s%-20s\n", "Staff ID", "First Name", "Last Name", "Username");
 

@@ -24,6 +24,7 @@ import util.exception.DoctorNotFoundException;
 import util.exception.InvalidInputException;
 import util.exception.InvalidLoginException;
 import util.exception.PatientNotFoundException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -61,8 +62,11 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
     @Override
     public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException {
         PatientEntity entity = em.find(PatientEntity.class, id);
-        entity.getAppointments().size();
-
+        //try {
+            //entity.getAppointments().size();
+        //} catch (javax.ejb.EJBException ex) {
+            //throw new PatientNotFoundException("Patient ID " + id + " does not exist!");
+        //}
         if (entity != null) {
             return entity;
         } else {
@@ -74,7 +78,9 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         try {
             PatientEntity patientEntity = retrievePatientEntityByIdentityNum(identityNum);
 
-            if (patientEntity.getPassword().equals(password)) {
+            String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + patientEntity.getSalt()));
+
+            if (patientEntity.getPassword().equals(passwordHash)) {
                 return patientEntity;
             } else {
                 throw new InvalidLoginException("Username does not exist or invalid password!");
@@ -114,7 +120,7 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
             ae.setPatient(null);
             em.remove(ae);
         }
-        
+
         em.remove(entity);
     }
 

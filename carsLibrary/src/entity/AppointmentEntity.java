@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -36,6 +37,8 @@ public class AppointmentEntity implements Serializable {
     private Long appointmentId;
     @Column(nullable = false)
     private Timestamp appointmentTimestamp;
+    @Column(nullable = false)
+    private String timestamp;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "patient_id")
@@ -48,12 +51,14 @@ public class AppointmentEntity implements Serializable {
     
 
     public AppointmentEntity() {
+        //this.consultation = new ConsultationEntity();
     }
 
     public AppointmentEntity(Timestamp appointmentTimeStamp) {
         this();
         
         this.appointmentTimestamp = appointmentTimeStamp;
+        this.timestamp = appointmentTimestamp.toString();
     }
 
     public Long getAppointmentId() {
@@ -120,7 +125,6 @@ public class AppointmentEntity implements Serializable {
     /**
      * @return the consultation
      */
-    //@XmlTransient
     public ConsultationEntity getConsultation() {
         return consultation;
     }
@@ -144,8 +148,21 @@ public class AppointmentEntity implements Serializable {
      */
     public void setAppointmentTimestamp(Timestamp appointmentTimestamp) {
         this.appointmentTimestamp = appointmentTimestamp;
+        this.setTimestamp(appointmentTimestamp.toString());
     }
-    
-    
+
+    /**
+     * @return the timestamp
+     */
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * @param timestamp the timestamp to set
+     */
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
     
 }

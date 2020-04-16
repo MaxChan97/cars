@@ -16,8 +16,12 @@ public interface DoctorEntitySessionBeanLocal {
     public long createDoctorEntity(DoctorEntity doctorEntity);
 
     public List<DoctorEntity> retrieveAllDoctorEntities();
+    
+    public List<DoctorEntity> retrieveAllDoctorEntitiesWebService();
 
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException;
+    
+    public DoctorEntity retrieveDoctorEntityByIdWebService(Long id) throws DoctorNotFoundException;
 
     public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException, InvalidInputException;
 

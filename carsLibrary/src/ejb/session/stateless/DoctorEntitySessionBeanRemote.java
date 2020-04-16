@@ -23,7 +23,11 @@ public interface DoctorEntitySessionBeanRemote {
 
     public List<DoctorEntity> retrieveAllDoctorEntities();
 
+    public List<DoctorEntity> retrieveAllDoctorEntitiesWebService();
+    
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException;
+    
+    public DoctorEntity retrieveDoctorEntityByIdWebService(Long id) throws DoctorNotFoundException;
 
     public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException, InvalidInputException;
 

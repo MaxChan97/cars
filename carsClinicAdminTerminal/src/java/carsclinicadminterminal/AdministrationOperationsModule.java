@@ -519,7 +519,7 @@ public class AdministrationOperationsModule {
             DoctorEntity doctorToUpdateLeave = doctorEntitySessionBean.retrieveDoctorEntityById(idLeave);
             ArrayList<Date> datesAppliedForLeaves = doctorToUpdateLeave.getDatesAppliedForLeaves();
             //To change
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
             Date currentDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
             Date dateToApplyLeave = new Date(year - 1900, month - 1, date);
@@ -558,7 +558,7 @@ public class AdministrationOperationsModule {
 
         } catch (Exception ex) {
             System.out.println();
-            System.out.println(ex.getMessage());
+            System.out.println(ex);
             System.out.println("Leave not applied!");
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();

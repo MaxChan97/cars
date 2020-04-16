@@ -129,7 +129,7 @@ public class RegistrationOperationModule {
     private void doRegisterWalkInConsultation() {
         Scanner scanner = new Scanner(System.in);
         try {
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
@@ -274,7 +274,7 @@ public class RegistrationOperationModule {
     private void doRegisterConsultationByAppointment() {
         Scanner scanner = new Scanner(System.in);
         try {
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 15, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
             System.out.println("*** CARS :: Registration Operation :: Register Consultation By Appointment ***\n");
             System.out.print("Enter Patient Identity Number> ");
@@ -357,7 +357,7 @@ public class RegistrationOperationModule {
 
     private List<Time> getAllTimeSlots() {
         List<Time> allTimeSlots = new ArrayList<>();
-        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         if (currentTimestamp.getDay() == 1 || currentTimestamp.getDay() == 2 || currentTimestamp.getDay() == 3) {
             allTimeSlots.add(new Time(8, 30, 0));
             allTimeSlots.add(new Time(9, 0, 0));

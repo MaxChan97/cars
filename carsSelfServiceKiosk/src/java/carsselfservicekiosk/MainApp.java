@@ -197,7 +197,7 @@ public class MainApp {
     private void doRegisterWalkInConsultation() {
         Scanner scanner = new Scanner(System.in);
         try {
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
@@ -218,7 +218,7 @@ public class MainApp {
                 }
             }
 
-            System.out.println("*** CARS :: Registration Operation :: Register Walk-In Consultation ***\n");
+            System.out.println("*** Self-Service Kiosk :: Register Walk-In Consultation ***\n");
             System.out.println("Doctor:");
             System.out.println("Id |Name");
             for (DoctorEntity de : availableDoctors) {
@@ -279,9 +279,6 @@ public class MainApp {
                 throw new InvalidInputException("Doctor ID inputted is not valid!\nPlease choose one of the displayed doctors!");
             }
 
-            System.out.print("Enter Patient Identity Number> ");
-            String patientIdentityNumber = scanner.nextLine().trim();
-
             DoctorEntity doctorEntity = doctorEntitySessionBean.retrieveDoctorEntityById(doctorId);
             PatientEntity patientEntity = currentPatientEntity;
             Timestamp appointmentTimestamp = new Timestamp(0);
@@ -308,7 +305,7 @@ public class MainApp {
             }
 
             AppointmentEntity appointmentEntity = new AppointmentEntity(appointmentTimestamp);
-            Long appointmentId = appointmentEntitySessionBean.createAppointmentEntity(patientIdentityNumber, doctorId, appointmentEntity);
+            Long appointmentId = appointmentEntitySessionBean.createAppointmentEntity(currentPatientEntity.getIdentityNum(), doctorId, appointmentEntity);
             Long consultationId = consultationEntitySessionBean.createConsultationEntity(appointmentId, 30);
 
             String time = String.format("%02d", appointmentTimestamp.getHours()) + ":" + String.format("%02d", appointmentTimestamp.getMinutes());
@@ -336,9 +333,9 @@ public class MainApp {
     private void doRegisterConsultationByAppointment() {
         Scanner scanner = new Scanner(System.in);
         try {
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 15, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
-            System.out.println("*** CARS :: Registration Operation :: Register Consultation By Appointment ***\n");
+            System.out.println("*** Self-Service Kiosk :: Register Consultation By Appointment ***\n");
 
             PatientEntity patientEntity = currentPatientEntity;
             System.out.println();
@@ -405,10 +402,11 @@ public class MainApp {
     
     private void doViewAppointments() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("*** CARS :: Appointment Operation :: View Patient Appointment  ***\n");
+        System.out.println("*** Self-Service Kiosk :: View Patient Appointment  ***\n");
         System.out.println();
 
         try {
+            currentPatientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(currentPatientEntity.getIdentityNum());
             PatientEntity patient = currentPatientEntity;
             List<AppointmentEntity> appointments = patient.getAppointments();
             //List<AppointmentEntity> appointments = patientEntitySessionBean.viewAppointmentmentByPatientId(id1);
@@ -433,14 +431,12 @@ public class MainApp {
     private void doAddAppointment() {
         Scanner scanner = new Scanner(System.in);
         try {
-            System.out.println("*** CARS :: Appointment Operation :: Add Appointment  ***\n");
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            System.out.println("*** Self-Service Kiosk :: Add Appointment  ***\n");
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
-            for (DoctorEntity de : doctorEntities) {
-                if (!de.getLeaves().contains(new java.util.Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate()))) {
-                    availableDoctors.add(de);
-                }
+            for (DoctorEntity d : doctorEntities) {
+                availableDoctors.add(d);
             }
             System.out.println("Id |Name");
             for (DoctorEntity de : availableDoctors) {
@@ -487,6 +483,9 @@ public class MainApp {
             Date currDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
             if (dayDiff(apptDate, currDate) < 2) {
                 throw new InvalidInputException("You need to book an appointment at least 2 days in advance!");
+            }
+            if (doctorToAppoint.getLeaves().contains(apptDate)) {
+                throw new InvalidInputException("Doctor is on leave on entered date!\nPlease select another doctor!");
             }
 
             List<Time> allTimeSlots = getAllTimeSlots();
@@ -557,8 +556,8 @@ public class MainApp {
     
     private void doCancelAppointment() {
         Scanner scanner = new Scanner(System.in);
-        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 31, 0, 0);
-        System.out.println("*** CARS :: Appointment Operation :: Cancel Appointment  ***\n");
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        System.out.println("*** Self-Service Kiosk :: Cancel Appointment  ***\n");
         System.out.println();
 
         try {
@@ -623,7 +622,7 @@ public class MainApp {
 
     private List<Time> getAllTimeSlots() {
         List<Time> allTimeSlots = new ArrayList<>();
-        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         if (currentTimestamp.getDay() == 1 || currentTimestamp.getDay() == 2 || currentTimestamp.getDay() == 3) {
             allTimeSlots.add(new Time(8, 30, 0));
             allTimeSlots.add(new Time(9, 0, 0));

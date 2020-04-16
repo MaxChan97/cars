@@ -114,15 +114,13 @@ public class AppointmentOperationsModule {
         Scanner scanner = new Scanner(System.in);
         try {
             System.out.println("*** CARS :: Appointment Operation :: Add Appointment  ***\n");
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
-            for (DoctorEntity de : doctorEntities) {
-                if (!de.getLeaves().contains(new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate()))) {
-                    availableDoctors.add(de);
-                }
-            }
             System.out.println("Id |Name");
+            for (DoctorEntity d : doctorEntities) {
+                availableDoctors.add(d);
+            }
             for (DoctorEntity de : availableDoctors) {
                 if (de.getDoctorId() >= 100) {
                     System.out.println(de.getDoctorId() + "|" + de.getFullName());
@@ -167,6 +165,9 @@ public class AppointmentOperationsModule {
             Date currDate = new Date(currentTimestamp.getYear(), currentTimestamp.getMonth(), currentTimestamp.getDate());
             if (dayDiff(apptDate, currDate) < 2) {
                 throw new InvalidInputException("You need to book an appointment at least 2 days in advance!");
+            }
+            if (doctorToAppoint.getLeaves().contains(apptDate)) {
+                throw new InvalidInputException("Doctor is on leave on entered date!\nPlease select another doctor!");
             }
 
             List<Time> allTimeSlots = getAllTimeSlots();
@@ -239,7 +240,7 @@ public class AppointmentOperationsModule {
 
     private void doCancelAppointment() {
         Scanner scanner = new Scanner(System.in);
-        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 31, 0, 0);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         System.out.println("*** CARS :: Appointment Operation :: Cancel Appointment  ***\n");
         System.out.print("Enter Patient Identity Number> ");
         String id2 = scanner.nextLine().trim();
@@ -299,7 +300,7 @@ public class AppointmentOperationsModule {
 
     private List<Time> getAllTimeSlots() {
         List<Time> allTimeSlots = new ArrayList<>();
-        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         if (currentTimestamp.getDay() == 1 || currentTimestamp.getDay() == 2 || currentTimestamp.getDay() == 3) {
             allTimeSlots.add(new Time(8, 30, 0));
             allTimeSlots.add(new Time(9, 0, 0));

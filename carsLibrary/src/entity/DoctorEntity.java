@@ -19,6 +19,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import util.exception.InvalidInputException;
 
 
@@ -57,7 +59,7 @@ public class DoctorEntity implements Serializable {
         this.appointments = new ArrayList<AppointmentEntity>();
         this.notAvail = new HashSet<>();
         this.leaves = new HashSet<>();
-        datesAppliedForLeaves =  new ArrayList<>();
+        this.datesAppliedForLeaves =  new ArrayList<>();
     }
 
     public DoctorEntity(String firstName, String lastName, String registration, String qualification) {

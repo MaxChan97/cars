@@ -16,13 +16,17 @@ import util.exception.PatientNotFoundException;
 
 public interface PatientEntitySessionBeanLocal {
 
-    public String createPatientEntity(PatientEntity patientEntity);
+    public String createPatientEntity(PatientEntity patientEntity) throws InvalidInputException;
 
     public List<PatientEntity> retrieveAllPatientEntities();
 
     public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException;
+    
+    public PatientEntity retrievePatientEntityByIdentityNumWebService(String id) throws PatientNotFoundException;
 
     public PatientEntity patientLogin(String identityNum, String password) throws InvalidLoginException;
+    
+    public PatientEntity patientLoginWebService(String identityNum, String password) throws InvalidLoginException;
     
     public List<AppointmentEntity> viewAppointmentmentByPatientId(String patientId) throws PatientNotFoundException;
     

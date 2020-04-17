@@ -187,7 +187,7 @@ public class PatientEntity implements Serializable {
             throw new InvalidInputException("Invalid Password!\nPassword must be exactly 6 digits long and numeric!");
         }
         try {
-            int checkPassword = Integer.valueOf(password);
+            Long checkPassword = Long.valueOf(password);
         } catch (NumberFormatException ex) {
             throw new InvalidInputException("Invalid Password\nPassword must be exactly 6 digits long and numeric!");
         }

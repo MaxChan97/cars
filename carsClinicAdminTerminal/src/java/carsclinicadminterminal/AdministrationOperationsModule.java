@@ -558,7 +558,7 @@ public class AdministrationOperationsModule {
 
         } catch (Exception ex) {
             System.out.println();
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
             System.out.println("Leave not applied!");
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();

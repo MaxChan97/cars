@@ -132,7 +132,7 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
     public void updatePatientEntity(PatientEntity patientEntity) throws PatientNotFoundException, InvalidInputException {
         PatientEntity pe = retrievePatientEntityByIdentityNum(patientEntity.getIdentityNum());
 
-        pe.setAddress(patientEntity.getAddress());
+        /*pe.setAddress(patientEntity.getAddress());
         pe.setAge(patientEntity.getAge());
         pe.setAppointments(patientEntity.getAppointments());
         pe.setFirstName(patientEntity.getFirstName());
@@ -140,7 +140,8 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         pe.setGender(patientEntity.getGender());
         pe.setIdentityNum(patientEntity.getIdentityNum());
         pe.setPassword(patientEntity.getPassword());
-        pe.setPhoneNumber(patientEntity.getPhoneNumber());
+        pe.setPhoneNumber(patientEntity.getPhoneNumber());*/
+        em.merge(patientEntity);
     }
 
     @Override

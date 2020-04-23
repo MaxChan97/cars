@@ -18,11 +18,14 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.DoctorNotAvailableForWalkInException;
 import util.exception.InvalidInputException;
+import util.exception.NoAppointmentBookedException;
 import util.exception.NoAvailableDoctorsException;
+import util.exception.PatientNotFoundException;
 
 /**
  *
@@ -90,7 +93,7 @@ public class RegistrationOperationModule {
             System.out.print("Enter Identity Number> ");
             newPatientEntity.setIdentityNum(scanner.nextLine().trim());
             System.out.print("Enter Password> ");
-            newPatientEntity.setPassword(String.valueOf(Integer.valueOf(scanner.nextLine().trim())));
+            newPatientEntity.setPassword(scanner.nextLine().trim());
             System.out.print("Enter First Name> ");
             newPatientEntity.setFirstName(scanner.nextLine().trim());
             System.out.print("Enter Last Name> ");
@@ -98,7 +101,7 @@ public class RegistrationOperationModule {
             System.out.print("Enter Gender> ");
             newPatientEntity.setGender(scanner.nextLine().trim());
             System.out.print("Enter Age> ");
-            newPatientEntity.setAge(new Integer(scanner.nextLine().trim()));
+            newPatientEntity.setAge(scanner.nextLine().trim());
             System.out.print("Enter Phone> ");
             newPatientEntity.setPhoneNumber(scanner.nextLine().trim());
             System.out.print("Enter Address> ");
@@ -106,12 +109,16 @@ public class RegistrationOperationModule {
 
             patientEntitySessionBean.createPatientEntity(newPatientEntity);
             System.out.println("Patient has been registered successfully!\n");
-        } catch (NumberFormatException ex) {
-            System.out.println("password must be numeric!");
-            System.out.println("Patient not registered!\n");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
+        } catch (javax.ejb.EJBException ex) {
+            System.out.println();
+            System.out.println("There already exists a patient record with entered Identity Number!");
+            System.out.println("Patient not added!");
             System.out.print("Press any key to continue...> ");
             scanner.nextLine();
         } catch (Exception ex) {
+            System.out.println();
             System.out.println(ex.getMessage());
             System.out.println("Patient not registered!\n");
             System.out.print("Press any key to continue...> ");
@@ -120,9 +127,9 @@ public class RegistrationOperationModule {
     }
 
     private void doRegisterWalkInConsultation() {
+        Scanner scanner = new Scanner(System.in);
         try {
-            Scanner scanner = new Scanner(System.in);
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
             List<DoctorEntity> doctorEntities = doctorEntitySessionBean.retrieveAllDoctorEntities();
             List<DoctorEntity> availableDoctors = new ArrayList<>();
@@ -188,7 +195,12 @@ public class RegistrationOperationModule {
             }
 
             System.out.print("Enter Doctor Id> ");
-            Long doctorId = Long.valueOf(scanner.nextLine().trim());
+            Long doctorId = Long.valueOf("0");
+            try {
+                doctorId = Long.valueOf(scanner.nextLine().trim());
+            } catch (NumberFormatException ex) {
+                throw new InvalidInputException("Doctor ID inputted is not valid\nPlease choose one of the displayed doctors!");
+            }
             boolean noneMatch = false;
             for (DoctorEntity de : availableDoctors) {
                 if (de.getDoctorId().equals(doctorId)) {
@@ -196,14 +208,19 @@ public class RegistrationOperationModule {
                 }
             }
             if (noneMatch == false) {
-                throw new InvalidInputException("Doctor ID inputted is not valid!");
+                throw new InvalidInputException("Doctor ID inputted is not valid!\nPlease choose one of the displayed doctors!");
             }
 
             System.out.print("Enter Patient Identity Number> ");
             String patientIdentityNumber = scanner.nextLine().trim();
 
             DoctorEntity doctorEntity = doctorEntitySessionBean.retrieveDoctorEntityById(doctorId);
+            //PatientEntity patientEntity = new PatientEntity();
+            //try {
             PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientIdentityNumber);
+            //} catch (javax.ejb.EJBException ex) {
+            //throw new PatientNotFoundException("Patient ID " + patientIdentityNumber + " does not exist!");
+            //}
             //appointmentTimeStamp is initialized to a nonsense value first to prevent error
             Timestamp appointmentTimestamp = new Timestamp(0);
             boolean doctorIsFreeForWalkIn = false;
@@ -235,38 +252,62 @@ public class RegistrationOperationModule {
             String time = String.format("%02d", appointmentTimestamp.getHours()) + ":" + String.format("%02d", appointmentTimestamp.getMinutes());
             System.out.println(patientEntity.getFullName() + " appointment with Dr. " + doctorEntity.getFullName() + " has been booked at " + time + ".");
             System.out.println("Queue Number is : " + consultationEntitySessionBean.retrieveConsultationEntityById(consultationId).getQueueNumber());
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
+        } catch (javax.ejb.EJBException ex) {
+            //try to give details about booking that has already been placed
+            //put the press enter thing
+            System.out.println();
+            System.out.println("Patient already has existing appointment with another doctor at this time and date!\nUnable to book appointment!");
+            System.out.println("Appointment not booked!");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         } catch (Exception ex) {
+            System.out.println();
             System.out.println(ex.getMessage());
             System.out.println("Consultation not registered");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
     }
 
     private void doRegisterConsultationByAppointment() {
+        Scanner scanner = new Scanner(System.in);
         try {
-            Scanner scanner = new Scanner(System.in);
-            Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
             System.out.println("*** CARS :: Registration Operation :: Register Consultation By Appointment ***\n");
             System.out.print("Enter Patient Identity Number> ");
-            PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(scanner.nextLine().trim());
+            String patientIdentityNumber = scanner.nextLine().trim();
+            //PatientEntity patientEntity = new PatientEntity();
+            //try {
+            PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientIdentityNumber);
+            //} catch (javax.ejb.EJBException ex) {
+            //throw new PatientNotFoundException("Patient ID " + patientIdentityNumber + " does not exist!");
+            //}
             System.out.println();
 
             List<AppointmentEntity> allPatientAppointments = patientEntity.getAppointments();
             List<AppointmentEntity> appointments = new ArrayList<>();
+            boolean hasAppointment = false;
             for (AppointmentEntity ae : allPatientAppointments) {
                 if (sameDay(ae.getAppointmentTimestamp(), currentTimestamp)
                         && (ae.getAppointmentTimestamp().after(currentTimestamp) || ae.getAppointmentTimestamp().equals(currentTimestamp))
                         && ae.getConsultation() == null) {
                     appointments.add(ae);
+                    hasAppointment = true;
                 }
             }
 
             System.out.println("Appointments:");
             System.out.println("Id |Date       |Time  |Doctor");
+            if (hasAppointment == false) {
+                throw new NoAppointmentBookedException(patientEntity.getFullName() + " does not have any appointments booked for today!");
+            }
             HashSet<Long> appointmentIds = new HashSet<>();
             for (AppointmentEntity ae : appointments) {
                 appointmentIds.add(ae.getAppointmentId());
-                String date = String.valueOf(ae.getAppointmentTimestamp().getYear() + 1900) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getMonth()) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getDay());
+                String date = String.valueOf(ae.getAppointmentTimestamp().getYear() + 1900) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getMonth() + 1) + "-" + String.format("%02d", ae.getAppointmentTimestamp().getDate());
                 String time = String.format("%02d", ae.getAppointmentTimestamp().getHours()) + ":" + String.format("%02d", ae.getAppointmentTimestamp().getMinutes());
                 if (ae.getAppointmentId() < 100) {
                     System.out.println(String.format("%02d", ae.getAppointmentId()) + " |" + date + " |" + time + " |" + ae.getDoctor().getFullName());
@@ -277,10 +318,15 @@ public class RegistrationOperationModule {
             System.out.println();
 
             System.out.print("Enter Appointment Id> ");
-            Long appointmentId = Long.valueOf(scanner.nextLine().trim());
+            Long appointmentId = Long.valueOf("0");
+            try {
+                appointmentId = Long.valueOf(scanner.nextLine().trim());
+            } catch (NumberFormatException ex) {
+                throw new InvalidInputException("Appointment ID entered is not valid!\nPlease enter one of the appointment IDs displayed!");
+            }
             System.out.println();
             if (!appointmentIds.contains(appointmentId)) {
-                throw new InvalidInputException("Appointment ID entered is not valid!");
+                throw new InvalidInputException("Appointment ID entered is not valid\nPlease enter one of the appointment IDs displayed!");
             }
 
             AppointmentEntity appointmentEntity = appointmentEntitySessionBean.retrieveAppointmentEntityById(appointmentId);
@@ -288,11 +334,16 @@ public class RegistrationOperationModule {
             Long consultationId = consultationEntitySessionBean.createConsultationEntity(appointmentId, 30);
 
             String time = String.format("%02d", appointmentEntity.getAppointmentTimestamp().getHours()) + ":" + String.format("%02d", appointmentEntity.getAppointmentTimestamp().getMinutes());
-            System.out.println(patientEntity.getFullName() + " appointment with Dr. " + doctorEntity.getFullName() + " has been booked at " + time + ".");
+            System.out.println(patientEntity.getFullName() + " appointment is confirmed with Dr. " + doctorEntity.getFullName() + " at " + time + ".");
             System.out.println("Queue Number is : " + consultationEntitySessionBean.retrieveConsultationEntityById(consultationId).getQueueNumber());
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         } catch (Exception ex) {
+            System.out.println();
             System.out.println(ex.getMessage());
             System.out.println("Consultation not registered");
+            System.out.print("Press any key to continue...> ");
+            scanner.nextLine();
         }
     }
 
@@ -306,7 +357,7 @@ public class RegistrationOperationModule {
 
     private List<Time> getAllTimeSlots() {
         List<Time> allTimeSlots = new ArrayList<>();
-        Timestamp currentTimestamp = new Timestamp(2020 - 1900, 4 - 1, 13, 16, 15, 0, 0);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         if (currentTimestamp.getDay() == 1 || currentTimestamp.getDay() == 2 || currentTimestamp.getDay() == 3) {
             allTimeSlots.add(new Time(8, 30, 0));
             allTimeSlots.add(new Time(9, 0, 0));

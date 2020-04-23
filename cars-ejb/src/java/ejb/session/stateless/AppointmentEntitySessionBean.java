@@ -21,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.AppointmentNotFoundException;
 import util.exception.DoctorNotFoundException;
+import util.exception.InvalidInputException;
 import util.exception.PatientNotFoundException;
 
 /**
@@ -44,7 +45,7 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
     }
 
     @Override
-    public Long createAppointmentEntity(String patientIdentityNum, Long doctorId, AppointmentEntity appointmentEntity) throws PatientNotFoundException, DoctorNotFoundException {
+    public Long createAppointmentEntity(String patientIdentityNum, Long doctorId, AppointmentEntity appointmentEntity) throws PatientNotFoundException, DoctorNotFoundException, InvalidInputException {
         PatientEntity patientEntity = patientEntitySessionBean.retrievePatientEntityByIdentityNum(patientIdentityNum);
         appointmentEntity.setPatient(patientEntity);
         DoctorEntity doctorEntity = doctorEntitySessionBean.retrieveDoctorEntityById(doctorId);
@@ -54,8 +55,12 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
         doctorEntity.getAppointments().add(appointmentEntity);
         doctorEntity.getNotAvail().add(appointmentEntity.getAppointmentTimestamp());
 
-        em.persist(appointmentEntity);
-        em.flush();
+        try {
+            em.persist(appointmentEntity);
+            em.flush();
+        } catch (javax.ejb.EJBException ex) {
+            throw new InvalidInputException("You already have an existing appointment with another doctor at this time and date!\nUnable to book appointment!");
+        }
 
         return appointmentEntity.getAppointmentId();
     }
@@ -70,6 +75,27 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
     @Override
     public AppointmentEntity retrieveAppointmentEntityById(Long appointmentId) throws AppointmentNotFoundException {
         AppointmentEntity appointment = em.find(AppointmentEntity.class, appointmentId);
+
+        if (appointment != null) {
+            return appointment;
+        } else {
+            throw new AppointmentNotFoundException("Appointment ID " + appointmentId + " does not exist!");
+        }
+    }
+
+    @Override
+    public AppointmentEntity retrieveAppointmentEntityByIdWebService(Long appointmentId) throws AppointmentNotFoundException {
+        AppointmentEntity appointment = em.find(AppointmentEntity.class, appointmentId);
+        if (appointment == null) {
+            throw new AppointmentNotFoundException("Appointment ID " + appointmentId + " does not exist!");
+        }
+
+        em.detach(appointment);
+        em.detach(appointment.getPatient());
+        em.detach(appointment.getDoctor());
+        if (appointment.getConsultation() != null) {
+            em.detach(appointment.getConsultation());
+        }
 
         if (appointment != null) {
             return appointment;
@@ -96,11 +122,9 @@ public class AppointmentEntitySessionBean implements AppointmentEntitySessionBea
         }
         PatientEntity pe = appointment.getPatient();
         pe.getAppointments().remove(appointment);
-        appointment.setPatient(null);
         DoctorEntity de = appointment.getDoctor();
         de.getAppointments().remove(appointment);
         de.getNotAvail().remove(appointment.getAppointmentTimestamp());
-        appointment.setDoctor(null);
         em.remove(appointment);
     }
 }

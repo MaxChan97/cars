@@ -16,8 +16,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import util.exception.InvalidInputException;
 import util.exception.InvalidLoginException;
 import util.exception.StaffNotFoundException;
+import util.security.CryptographicHelper;
 
 
 @Stateless
@@ -74,7 +76,9 @@ public class StaffEntitySessionBean implements StaffEntitySessionBeanRemote, Sta
         try {
             StaffEntity staffEntity = retrieveStaffEntityByUsername(username);
             
-            if(staffEntity.getPassword().equals(password)) {           
+            String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + staffEntity.getSalt()));
+            
+            if(staffEntity.getPassword().equals(passwordHash)) {           
                 return staffEntity;
             }
             else {
@@ -87,7 +91,7 @@ public class StaffEntitySessionBean implements StaffEntitySessionBeanRemote, Sta
     }
     
     @Override
-    public void updateStaffEntity(StaffEntity staffEntity) throws StaffNotFoundException {
+    public void updateStaffEntity(StaffEntity staffEntity) throws StaffNotFoundException, InvalidInputException {
         StaffEntity se = retrieveStaffEntityById(staffEntity.getStaffId());
         
         se.setUserName(staffEntity.getUserName());

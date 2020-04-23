@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.DoctorNotFoundException;
+import util.exception.InvalidInputException;
 
 /**
  *
@@ -47,11 +48,45 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
         
         return query.getResultList();
     }
+    
+    @Override
+    public List<DoctorEntity> retrieveAllDoctorEntitiesWebService() {
+        Query query = em.createQuery("SELECT d FROM DoctorEntity d");
+        
+        List<DoctorEntity> doctorEntities = query.getResultList();
+        
+        for (DoctorEntity de : doctorEntities) {
+            em.detach(de);
+            for (AppointmentEntity ae : de.getAppointments()) {
+                em.detach(ae);
+            }
+        }
+        
+        return doctorEntities;
+    }
 
     @Override
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException {
         DoctorEntity entity = em.find(DoctorEntity.class, id);
-        entity.getAppointments().size();
+        
+        if (entity != null) {
+            return entity;
+        } else {
+            throw new DoctorNotFoundException("Doctor ID " + id + " does not exist!");
+        }
+    }
+    
+    @Override
+    public DoctorEntity retrieveDoctorEntityByIdWebService(Long id) throws DoctorNotFoundException {
+        DoctorEntity entity = em.find(DoctorEntity.class, id);
+        if (entity == null) {
+            throw new DoctorNotFoundException("Doctor ID " + id + " does not exist!");
+        }
+        
+        em.detach(entity);
+        for (AppointmentEntity ae : entity.getAppointments()) {
+            em.detach(ae);
+        }
         
         if (entity != null) {
             return entity;
@@ -61,8 +96,8 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
     }
 
     @Override
-    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException {
-        DoctorEntity de = retrieveDoctorEntityById(doctorEntity.getDoctorId());
+    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException, InvalidInputException {
+        /*DoctorEntity de = retrieveDoctorEntityById(doctorEntity.getDoctorId());
         
         de.setFirstName(doctorEntity.getFirstName());
         de.setLastName(doctorEntity.getLastName());
@@ -71,7 +106,8 @@ public class DoctorEntitySessionBean implements DoctorEntitySessionBeanRemote, D
         de.setNotAvail(doctorEntity.getNotAvail());
         de.setQualification(doctorEntity.getQualification());
         de.setRegistration(doctorEntity.getRegistration());
-        de.setDatesAppliedForLeaves(doctorEntity.getDatesAppliedForLeaves());
+        de.setDatesAppliedForLeaves(doctorEntity.getDatesAppliedForLeaves());*/
+        em.merge(doctorEntity);
     }
 
     @Override

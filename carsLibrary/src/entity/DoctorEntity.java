@@ -14,10 +14,14 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import util.exception.InvalidInputException;
 
 
 /**
@@ -47,7 +51,7 @@ public class DoctorEntity implements Serializable {
     @Column(nullable = false)
     private ArrayList<Date> datesAppliedForLeaves;
     
-    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE,orphanRemoval=true)
+    @OneToMany(mappedBy = "doctor",cascade= CascadeType.REMOVE,orphanRemoval=true, fetch = FetchType.EAGER)
     private List<AppointmentEntity> appointments;
     
 
@@ -55,7 +59,7 @@ public class DoctorEntity implements Serializable {
         this.appointments = new ArrayList<AppointmentEntity>();
         this.notAvail = new HashSet<>();
         this.leaves = new HashSet<>();
-        datesAppliedForLeaves =  new ArrayList<>();
+        this.datesAppliedForLeaves =  new ArrayList<>();
     }
 
     public DoctorEntity(String firstName, String lastName, String registration, String qualification) {
@@ -103,7 +107,10 @@ public class DoctorEntity implements Serializable {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(String firstName) throws InvalidInputException {
+        if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
+            throw new InvalidInputException("Invalid first name input\nFirst names must not be empty and First names must start with an uppercase character!");
+        }
         this.firstName = firstName;
     }
 
@@ -111,7 +118,10 @@ public class DoctorEntity implements Serializable {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(String lastName) throws InvalidInputException {
+        if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
+            throw new InvalidInputException("Invalid last name input\nLast names must not be empty and Last names must start with an uppercase character!");
+        }
         this.lastName = lastName;
     }
 
@@ -119,7 +129,10 @@ public class DoctorEntity implements Serializable {
         return registration;
     }
 
-    public void setRegistration(String registration) {
+    public void setRegistration(String registration) throws InvalidInputException {
+        if (registration.equals("")) {
+            throw new InvalidInputException("Invalid Registration Input!\nRegistration cannot be empty!");
+        }
         this.registration = registration;
     }
 
@@ -127,7 +140,10 @@ public class DoctorEntity implements Serializable {
         return qualification;
     }
 
-    public void setQualification(String qualification) {
+    public void setQualification(String qualification) throws InvalidInputException {
+        if (qualification.equals("")) {
+            throw new InvalidInputException("Invalid Qualification Input!\nQualification cannot be empty!");
+        }
         this.qualification = qualification;
     }
 

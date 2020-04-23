@@ -10,6 +10,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import util.exception.AppointmentNotFoundException;
 import util.exception.DoctorNotFoundException;
+import util.exception.InvalidInputException;
 import util.exception.PatientNotFoundException;
 
 /**
@@ -18,11 +19,13 @@ import util.exception.PatientNotFoundException;
  */
 public interface AppointmentEntitySessionBeanLocal {
 
-    public Long createAppointmentEntity(String patientIdentityNum, Long doctorId, AppointmentEntity appointmentEntity) throws PatientNotFoundException, DoctorNotFoundException;
+    public Long createAppointmentEntity(String patientIdentityNum, Long doctorId, AppointmentEntity appointmentEntity) throws PatientNotFoundException, DoctorNotFoundException, InvalidInputException;
 
     public List<AppointmentEntity> retrieveAllAppointmentEntities();
 
     public AppointmentEntity retrieveAppointmentEntityById(Long appointmentId) throws AppointmentNotFoundException;
+    
+    public AppointmentEntity retrieveAppointmentEntityByIdWebService(Long appointmentId) throws AppointmentNotFoundException;
 
     public void updateAppointmentEntity(AppointmentEntity newAppointment) throws AppointmentNotFoundException;
 

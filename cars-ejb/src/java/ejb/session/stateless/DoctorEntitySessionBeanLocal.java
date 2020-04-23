@@ -9,16 +9,21 @@ import entity.DoctorEntity;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import util.exception.DoctorNotFoundException;
+import util.exception.InvalidInputException;
 
 public interface DoctorEntitySessionBeanLocal {
 
     public long createDoctorEntity(DoctorEntity doctorEntity);
 
     public List<DoctorEntity> retrieveAllDoctorEntities();
+    
+    public List<DoctorEntity> retrieveAllDoctorEntitiesWebService();
 
     public DoctorEntity retrieveDoctorEntityById(Long id) throws DoctorNotFoundException;
+    
+    public DoctorEntity retrieveDoctorEntityByIdWebService(Long id) throws DoctorNotFoundException;
 
-    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException;
+    public void updateDoctorEntity(DoctorEntity doctorEntity) throws DoctorNotFoundException, InvalidInputException;
 
     public void deleteDoctorEntity(Long id) throws DoctorNotFoundException, SQLIntegrityConstraintViolationException;
 

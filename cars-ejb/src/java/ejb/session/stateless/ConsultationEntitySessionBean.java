@@ -41,7 +41,7 @@ public class ConsultationEntitySessionBean implements ConsultationEntitySessionB
     public Long createConsultationEntity(Long appointmentId, Integer duration) throws AppointmentNotFoundException {
         AppointmentEntity appointmentEntity = appointmentEntitySessionBean.retrieveAppointmentEntityById(appointmentId);
         
-        Timestamp currentTimestamp = new Timestamp(2020-1900, 4-1, 13, 16, 15, 0, 0);
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
         List<ConsultationEntity> consultationEntities = retrieveAllConsultationEntities();
         boolean newDay = true;
         for (ConsultationEntity ce : consultationEntities) {

@@ -11,6 +11,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlRootElement;
+import util.exception.InvalidInputException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -23,25 +26,47 @@ public class StaffEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long staffId;
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String firstName;
-    @Column (length =255, nullable= false)
+    @Column (nullable= false)
     private String lastName;
     @Column (nullable = false, unique = true)
     private String userName;
     @Column (nullable = false)
     private String password;
+    @Column (nullable = false, length = 32)
+    private String salt;
 
     public StaffEntity() {
+        this.salt = CryptographicHelper.getInstance().generateRandomString(32);
     }
 
-    public StaffEntity(String firstName, String lastName, String userName, String password) {
+    public StaffEntity(String firstName, String lastName, String userName, String password) throws InvalidInputException {
         this();
         
+        if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
+            throw new InvalidInputException("Invalid First Name Input\nFirst names must not be empty and First names must start with an uppercase character!");
+        }
+        
         this.firstName = firstName;
+        
+        if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
+            throw new InvalidInputException("Invalid Last Name Input\nLast names must not be empty and Last names must start with an uppercase character!");
+        }
+        
         this.lastName = lastName;
+        
+        if (userName.equals("")) {
+            throw new InvalidInputException("Invalid Username Input\nUsername cannot be empty!");
+        }
+        
         this.userName = userName;
-        this.password = password;
+        
+        if (password.length() < 6) {
+            throw new InvalidInputException("Invalid Password Input!\nPassword must be at least 6 characters long!");
+        }
+        
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.salt));
     }
 
     public Long getStaffId() {
@@ -76,7 +101,10 @@ public class StaffEntity implements Serializable {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(String firstName) throws InvalidInputException {
+        if (firstName.equals("") || !Character.isUpperCase(firstName.charAt(0))) {
+            throw new InvalidInputException("Invalid First Name Input\nFirst names must not be empty and First names must start with an uppercase character!");
+        }
         this.firstName = firstName;
     }
 
@@ -84,7 +112,10 @@ public class StaffEntity implements Serializable {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(String lastName) throws InvalidInputException {
+        if (lastName.equals("") || !Character.isUpperCase(lastName.charAt(0))) {
+            throw new InvalidInputException("Invalid Last Name Input\nLast names must not be empty and Last names must start with an uppercase character!");
+        }
         this.lastName = lastName;
     }
     
@@ -96,8 +127,11 @@ public class StaffEntity implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String password) throws InvalidInputException {
+        if (password.length() < 6) {
+            throw new InvalidInputException("Invalid Password Input!\nPassword must be at least 6 characters long!");
+        }
+        this.password = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + this.getSalt()));
     }
 
     @Override
@@ -115,8 +149,25 @@ public class StaffEntity implements Serializable {
     /**
      * @param userName the userName to set
      */
-    public void setUserName(String userName) {
+    public void setUserName(String userName) throws InvalidInputException {
+        if (userName.equals("")) {
+            throw new InvalidInputException("Invalid Username Input\nUsername cannot be empty!");
+        }
         this.userName = userName;
+    }
+
+    /**
+     * @return the salt
+     */
+    public String getSalt() {
+        return salt;
+    }
+
+    /**
+     * @param salt the salt to set
+     */
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
     
 }

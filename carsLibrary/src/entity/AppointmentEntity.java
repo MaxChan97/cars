@@ -7,17 +7,27 @@ package entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Max
  */
+@Table(
+        uniqueConstraints=
+                   @UniqueConstraint(columnNames={"patient_id", "appointmentTimestamp"})
+)
 @Entity
 public class AppointmentEntity implements Serializable {
 
@@ -25,23 +35,30 @@ public class AppointmentEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
+    @Column(nullable = false)
     private Timestamp appointmentTimestamp;
+    @Column(nullable = false)
+    private String timestamp;
     
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false, name = "patient_id")
     private PatientEntity patient;
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private DoctorEntity doctor;
     @OneToOne(mappedBy="appointment")
     private ConsultationEntity consultation;
     
 
     public AppointmentEntity() {
+        //this.consultation = new ConsultationEntity();
     }
 
     public AppointmentEntity(Timestamp appointmentTimeStamp) {
         this();
         
         this.appointmentTimestamp = appointmentTimeStamp;
+        this.timestamp = appointmentTimestamp.toString();
     }
 
     public Long getAppointmentId() {
@@ -131,8 +148,21 @@ public class AppointmentEntity implements Serializable {
      */
     public void setAppointmentTimestamp(Timestamp appointmentTimestamp) {
         this.appointmentTimestamp = appointmentTimestamp;
+        this.setTimestamp(appointmentTimestamp.toString());
     }
-    
-    
+
+    /**
+     * @return the timestamp
+     */
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * @param timestamp the timestamp to set
+     */
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
     
 }

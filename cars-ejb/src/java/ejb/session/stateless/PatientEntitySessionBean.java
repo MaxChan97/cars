@@ -24,6 +24,7 @@ import util.exception.DoctorNotFoundException;
 import util.exception.InvalidInputException;
 import util.exception.InvalidLoginException;
 import util.exception.PatientNotFoundException;
+import util.security.CryptographicHelper;
 
 /**
  *
@@ -44,8 +45,12 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
     }
 
     @Override
-    public String createPatientEntity(PatientEntity patientEntity) {
-        em.persist(patientEntity);
+    public String createPatientEntity(PatientEntity patientEntity) throws InvalidInputException {
+        try {
+            em.persist(patientEntity);
+        } catch (javax.ejb.EJBException ex) {
+            throw new InvalidInputException("There already exists a patient record with entered Identity Number!");
+        }
         em.flush();
 
         return patientEntity.getIdentityNum();
@@ -61,8 +66,26 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
     @Override
     public PatientEntity retrievePatientEntityByIdentityNum(String id) throws PatientNotFoundException {
         PatientEntity entity = em.find(PatientEntity.class, id);
-        entity.getAppointments().size();
-
+        if (entity != null) {
+            return entity;
+        } else {
+            throw new PatientNotFoundException("Patient ID " + id + " does not exist!");
+        }
+    }
+    
+    @Override
+    public PatientEntity retrievePatientEntityByIdentityNumWebService(String id) throws PatientNotFoundException {
+        PatientEntity entity = em.find(PatientEntity.class, id);
+        
+        if (entity == null) {
+            throw new PatientNotFoundException("Patient ID " + id + " does not exist!");
+        }
+        
+        em.detach(entity);
+        for (AppointmentEntity ae : entity.getAppointments()) {
+            em.detach(ae);
+        }
+        
         if (entity != null) {
             return entity;
         } else {
@@ -70,11 +93,14 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         }
     }
 
+    @Override
     public PatientEntity patientLogin(String identityNum, String password) throws InvalidLoginException {
         try {
             PatientEntity patientEntity = retrievePatientEntityByIdentityNum(identityNum);
 
-            if (patientEntity.getPassword().equals(password)) {
+            String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + patientEntity.getSalt()));
+
+            if (patientEntity.getPassword().equals(passwordHash)) {
                 return patientEntity;
             } else {
                 throw new InvalidLoginException("Username does not exist or invalid password!");
@@ -83,12 +109,30 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
             throw new InvalidLoginException("Username does not exist or invalid password!");
         }
     }
+    
+    @Override
+    public PatientEntity patientLoginWebService(String identityNum, String password) throws InvalidLoginException {
+        try {
+            PatientEntity patientEntity = retrievePatientEntityByIdentityNumWebService(identityNum);
+
+            String passwordHash = CryptographicHelper.getInstance().byteArrayToHexString(CryptographicHelper.getInstance().doMD5Hashing(password + patientEntity.getSalt()));
+
+            if (patientEntity.getPassword().equals(passwordHash)) {
+                return patientEntity;
+            } else {
+                throw new InvalidLoginException("Username does not exist or invalid password!");
+            }
+        } catch (PatientNotFoundException ex) {
+            throw new InvalidLoginException("Username does not exist or invalid password!");
+        }
+    }
+    
 
     @Override
     public void updatePatientEntity(PatientEntity patientEntity) throws PatientNotFoundException, InvalidInputException {
         PatientEntity pe = retrievePatientEntityByIdentityNum(patientEntity.getIdentityNum());
 
-        pe.setAddress(patientEntity.getAddress());
+        /*pe.setAddress(patientEntity.getAddress());
         pe.setAge(patientEntity.getAge());
         pe.setAppointments(patientEntity.getAppointments());
         pe.setFirstName(patientEntity.getFirstName());
@@ -96,7 +140,8 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
         pe.setGender(patientEntity.getGender());
         pe.setIdentityNum(patientEntity.getIdentityNum());
         pe.setPassword(patientEntity.getPassword());
-        pe.setPhoneNumber(patientEntity.getPhoneNumber());
+        pe.setPhoneNumber(patientEntity.getPhoneNumber());*/
+        em.merge(patientEntity);
     }
 
     @Override
@@ -114,7 +159,7 @@ public class PatientEntitySessionBean implements PatientEntitySessionBeanRemote,
             ae.setPatient(null);
             em.remove(ae);
         }
-        
+
         em.remove(entity);
     }
 
